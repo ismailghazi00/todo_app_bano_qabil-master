@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:todo_app/widgets/todo_tile_widget.dart';
 
 class TodoListScreen extends StatefulWidget {
   const TodoListScreen({super.key});
@@ -13,13 +14,51 @@ class TodoListScreen extends StatefulWidget {
 class _TodoListScreenState extends State<TodoListScreen> {
   final List<Todo> _todoList = [];
   //we have created a to do data Type, just we alreday have lerened in class
-
-  void _addTodo(String title, String description, DateTime date) {
+  //this list will store all the data we are entring through add funcation
+  //this list will show all the data in to do tile
+  List<Todo>? _searchedTodoList;
+  //we have created a new verable of Todo Type to store only thoes varibale how contains he serched data (matching data)
+  void _addTodo(
+      String userTitle, String userDescription, DateTime userTodoTime) {
     setState(() {
-      _todoList
-          .add(Todo(title: title, description: description, todoTime: date));
+      _todoList.add(Todo(
+          title: userTitle,
+          description: userDescription,
+          todoTime: userTodoTime));
+      //an add funcation can add data to to todolist
     });
     Navigator.pop(context);
+  }
+
+  void removeTodo(todo) {
+    setState(() {
+      _todoList.remove(todo);
+      //remove funcation can remove data from todolist
+    });
+  }
+
+  void searchTodo(String searchedKey) {
+    //this funcation will take a string searchedKey
+    //once we passed this funcation in textFeild's on change tan it will take serchedKey from on change and perormed bellow funcation
+    if (searchedKey.isEmpty) {
+      setState(() {
+        //it will make srechedList null to show all todo tiles if serchedKey is empty or simply we are not typing in it
+        _searchedTodoList = null;
+      });
+    } else {
+      //else it will prform this funcation
+      List<Todo> result = _todoList
+          //it will get String (What to serch) from serchedKeyand serched by ".where" lokking in title in _todoList and also convert it by ".toList" becaue we have return the list type data
+          .where((element) => element.title.contains(searchedKey))
+          .toList();
+      setState(() {
+        _searchedTodoList = result;
+        //here the result that we have got from above funcation converted in list will assigned to List<Todo> _searchedTodoList that we have created above
+        //and it will latter shown in A TodoTile
+        // to do Tile can show both the Seched List and todo-----------------------------------------------------------------
+        //because we have assigne this data in on change and in setState it will change on run time and no need to submiet
+      });
+    }
   }
 
   @override
@@ -94,11 +133,20 @@ class _TodoListScreenState extends State<TodoListScreen> {
                         //context and Index is posation of the reurned widget, context is for the App and index is for us
                         //Indux is a posation number of the widget
                         //"itemBuilder" required a wediget and "itemCount" limits the lenght of the list
-                        return _showTodoListTile(_todoList[index]);
+//---------------------------------------------------------------------------------------
+                        Todo item = _searchedTodoList != null
+                            //???
+                            ? _searchedTodoList![index]
+                            : _todoList[index];
+                        return TodoTileWidget(todo: item);
+                        //TodoTileWidget ia an STF class, in this class required the ToDo(Class) object (set of Data) todo
+                        //and as now we have to show both the data in TodoTileWidget (Basicaly this is a tile) so if we are serching this will show Item and if serch is empty it will show previous data the todo object data
                       }),
-                      // itemCount: 10,
-                      itemCount: _todoList.length,
+                      itemCount: _searchedTodoList != null
+                          ? _searchedTodoList!.length
+                          : _todoList.length,
                       //we changed the auto buld tile count by list lenght, by we will creat tiles as per list lenth.
+//----------------------------------------------------------------------------------------
                     ),
                   ),
                 ],
@@ -146,6 +194,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
 //
   TextField _showSerchTextField() {
     return TextField(
+      onChanged: searchTodo,
       cursorColor: const Color(0xff979797),
       //Blinking line where we type
       style: GoogleFonts.lato(
@@ -179,61 +228,10 @@ class _TodoListScreenState extends State<TodoListScreen> {
   }
 
 //
-  Container _showTodoListTile(Todo todo) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      height: 80,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(4),
-        color: const Color(0xff363636),
-      ),
-      child: Row(
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(10),
-            child: Icon(
-              Icons.circle_outlined,
-              size: 16,
-              color: Colors.white,
-            ),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('${todo.title}', style: textStyle(16)),
-              const SizedBox(
-                height: 4,
-              ),
-              Text(
-                '${todo.description}',
-                style: textStlSizeColor(15, Colors.grey),
-              ),
-              Row(
-                children: [
-                  Text(
-                    '${todo.todoTime.day}-${todo.todoTime.month}-${todo.todoTime.year}',
-                    style: textStlSizeColor(15, Colors.grey),
-                  ),
-                  const SizedBox(
-                    width: 120,
-                  ),
-                  _showTageContainerWork(),
-                  const SizedBox(width: 20),
-                  _showTageContainerPraiorty()
-                ],
-              )
-            ],
-          )
-        ],
-      ),
-    );
-  }
 
   Widget _showTodoAddbottomSheet() {
-    String? title, description;
-    DateTime? date;
+    String? userTitle, userDescription;
+    DateTime? userTodoTime;
     return Padding(
       padding: EdgeInsets.fromLTRB(
           25, 25, 25, MediaQuery.of(context).viewInsets.bottom),
@@ -262,7 +260,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
           //
           TextField(
             onChanged: (value) {
-              title = value;
+              userTitle = value;
             },
             cursorColor: const Color(0xff979797),
             //this style is input text style
@@ -303,7 +301,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
           TextField(
             cursorColor: const Color(0xff979797),
             onChanged: (value) {
-              description = value;
+              userDescription = value;
             },
             //this style is input text style
             style: textStyle(18),
@@ -351,7 +349,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
                     setState(() {
                       //DateTime can hold both the time and date
                       //but ShowTimePicker can asign its value only to TimeofDay Wich can only hole time
-                      date = DateTime(datevalue!.year, datevalue.month,
+                      userTodoTime = DateTime(datevalue!.year, datevalue.month,
                           datevalue.day, timeValue!.hour, timeValue.minute);
                       //so we have assigne the both values to date verable at once by above methord
                     });
@@ -373,8 +371,10 @@ class _TodoListScreenState extends State<TodoListScreen> {
               const Spacer(),
               IconButton(
                   onPressed: () {
-                    if (title != null && description != null && date != null) {
-                      _addTodo(title!, description!, date!);
+                    if (userTitle != null &&
+                        userDescription != null &&
+                        userTodoTime != null) {
+                      _addTodo(userTitle!, userDescription!, userTodoTime!);
                     }
                   },
                   icon: Image.asset("assets/send.png")),
@@ -406,63 +406,6 @@ class _TodoListScreenState extends State<TodoListScreen> {
             // ),
             Text(
               'Home',
-              style: textStyle(11),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Padding _showTageContainerWork() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 04, right: 4),
-      child: Container(
-        height: 22,
-        width: 60,
-        decoration: BoxDecoration(
-            color: const Color(0xffFFCC80),
-            borderRadius: BorderRadius.circular(2)),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/workicon.png',
-            ),
-            // const SizedBox(
-            //   width: 1,
-            // ),
-            Text(
-              'Work',
-              style: textStyle(11),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Padding _showTageContainerPraiorty() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 04, right: 4),
-      child: Container(
-        height: 22,
-        width: 40,
-        decoration: BoxDecoration(
-          color: const Color(0xff363636),
-          border: Border.all(color: const Color(0xff8687E7), width: 1),
-          borderRadius: BorderRadius.circular(2),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/flagicon.png',
-            ),
-            Text(
-              '3',
               style: textStyle(11),
             )
           ],
