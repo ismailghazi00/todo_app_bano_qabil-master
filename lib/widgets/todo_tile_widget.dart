@@ -7,7 +7,9 @@ class TodoTileWidget extends StatefulWidget {
   //"todo" is a set of data/ a tile data belongs to ToDo(Class) type stored in _todoList
   //basicaly we are saying to the widget to get the required data the title, todoTime etc from a Todo Class, from todo object(set of data/ Tile data)
   //below we have created "Todo todo;" an object or inisilaized the object to use below as todo.title
-  TodoTileWidget({required this.todo});
+  final Function? deleteTodo;
+  TodoTileWidget({super.key, required this.todo, this.deleteTodo()});
+  //TodoTileWidget({super.key, required this.todo});
   Todo todo;
 
   @override
@@ -109,7 +111,11 @@ class _TodoTileWidgetState extends State<TodoTileWidget> {
     return Padding(
       padding: const EdgeInsets.only(left: 04, right: 4),
       child: IconButton(
-          onPressed: () {}, icon: Image.asset("assets/deleticon.png")),
+          onPressed: () {
+            deleteTodo;
+            // removeTodo();
+          },
+          icon: Image.asset("assets/deleticon.png")),
       //we can not creat a List Remove funcation here because this STL/UI/DartFile/Class can not recgnize the list _todoList
       //and all of over data is stored in it
       //so we have created an funcation in todo_main_ui file and call the funcation here, funcation is recognized all over

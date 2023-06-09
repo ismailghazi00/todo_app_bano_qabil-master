@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:todo_app/widgets/todo_tile_widget.dart';
+import 'package:todo_app/screens/todo_empty_ui.dart';
 
 class TodoListScreen extends StatefulWidget {
   const TodoListScreen({super.key});
@@ -30,11 +31,14 @@ class _TodoListScreenState extends State<TodoListScreen> {
     Navigator.pop(context);
   }
 
-  void removeTodo(todo) {
-    setState(() {
-      _todoList.remove(todo);
-      //remove funcation can remove data from todolist
-    });
+  void deleteTodo(todo) {
+    if (todo == null) {
+    } else {
+      setState(() {
+        _todoList.remove(todo);
+        //remove funcation can remove data from todolist
+      });
+    }
   }
 
   void searchTodo(String searchedKey) {
@@ -108,7 +112,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
 //the floating action button funcation is down  below with all  its propirties
 //we can put thi sbutton any where but there it will align at right botom
       body: _todoList.isEmpty
-          ? _showEmptyHomeScreen()
+          ? const TodoEmptyScreenWidget()
           //a pre-buld body widget
           :
           //new Center(child: condition == true ? new Container() : new Container())
@@ -134,11 +138,17 @@ class _TodoListScreenState extends State<TodoListScreen> {
                         //Indux is a posation number of the widget
                         //"itemBuilder" required a wediget and "itemCount" limits the lenght of the list
 //---------------------------------------------------------------------------------------
-                        Todo item = _searchedTodoList != null
+                        Todo serchedtodo = _searchedTodoList != null
                             //???
                             ? _searchedTodoList![index]
                             : _todoList[index];
-                        return TodoTileWidget(todo: item);
+                        return TodoTileWidget(
+                            todo: serchedtodo,
+                            deleteTodo: (todo) {
+                              setState(() {
+                                _todoList.remove(todo);
+                              });
+                            });
                         //TodoTileWidget ia an STF class, in this class required the ToDo(Class) object (set of Data) todo
                         //and as now we have to show both the data in TodoTileWidget (Basicaly this is a tile) so if we are serching this will show Item and if serch is empty it will show previous data the todo object data
                       }),
@@ -410,38 +420,6 @@ class _TodoListScreenState extends State<TodoListScreen> {
             )
           ],
         ),
-      ),
-    );
-  }
-
-  Center _showEmptyHomeScreen() {
-    return Center(
-      child: Column(
-        // crossAxisAlignment: CrossAxisAlignment.center,
-        // mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(74, 74, 74, 10),
-            child: Image.asset(
-              "assets/checklist.png",
-              width: 227,
-              height: 227,
-            ),
-          ),
-          Text(
-            'What do you want to do today?',
-            style: textStyle(20),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Text(
-            'Tap + to add your tasks',
-            style: textStyle(16),
-          ),
-          // const Expanded(child: SizedBox()),
-          // _showAddTaskButton(),
-        ],
       ),
     );
   }
