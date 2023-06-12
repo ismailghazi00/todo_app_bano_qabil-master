@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:todo_app/screens/todo_main.dart';
+import 'package:todo_app/models/todo_class.dart';
 
 class TodoTileWidget extends StatefulWidget {
   //we have replaced "{super.key}" with "required this.todo"
   //"todo" is a set of data/ a tile data belongs to ToDo(Class) type stored in _todoList
   //basicaly we are saying to the widget to get the required data the title, todoTime etc from a Todo Class, from todo object(set of data/ Tile data)
   //below we have created "Todo todo;" an object or inisilaized the object to use below as todo.title
-  final Function? deleteTodo;
-  TodoTileWidget({super.key, required this.todo, this.deleteTodo()});
-  //TodoTileWidget({super.key, required this.todo});
+  TodoTileWidget({super.key, required this.todo, this.deleteTodo});
   Todo todo;
+  final Function? deleteTodo;
 
   @override
   State<TodoTileWidget> createState() => _TodoTileWidgetState();
@@ -39,12 +39,9 @@ class _TodoTileWidgetState extends State<TodoTileWidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(
-                height: 4,
+                height: 6,
               ),
               Text(widget.todo.title, style: textStyle(16)),
-              const SizedBox(
-                height: 2,
-              ),
               Text(
                 widget.todo.description,
                 style: textStlSizeColor(15, Colors.grey),
@@ -52,13 +49,7 @@ class _TodoTileWidgetState extends State<TodoTileWidget> {
               Row(
                 children: [
                   Text(
-                    DateFormat("EEEE, MMM d, yyyy - hh:mm a")
-                        .format(widget.todo.todoTime),
-                    // we import "intl: ^0.18.1" in pubspec and import "import 'package:intl/intl.dart';" to used this DateFormat Property
-                    //more properties are on that site
-                    //https://i0.wp.com/www.flutterbeads.com/wp-content/uploads/2022/01/watermark_Datetime1.png?resize=492%2C1024&ssl=1
-                    //https://i0.wp.com/www.flutterbeads.com/wp-content/uploads/2022/01/watermark_Datetime_custom2x.png?resize=768%2C530&ssl=1
-                    // '${todo.todoTime.day}-${todo.todoTime.month}-${todo.todoTime.year}',------------(the old methord)
+                    styleDateandTime(widget.todo.todoTime),
                     style: textStlSizeColor(15, Colors.grey),
                   ),
                   const SizedBox(
@@ -82,7 +73,7 @@ class _TodoTileWidgetState extends State<TodoTileWidget> {
     return Padding(
       padding: const EdgeInsets.only(left: 04, right: 4),
       child: Container(
-        height: 22,
+        height: 20,
         width: 60,
         decoration: BoxDecoration(
             color: const Color(0xffFFCC80),
@@ -107,15 +98,18 @@ class _TodoTileWidgetState extends State<TodoTileWidget> {
     );
   }
 
+//--------------------------------------------------------------------------
   Widget _showDeletButton() {
     return Padding(
       padding: const EdgeInsets.only(left: 04, right: 4),
       child: IconButton(
           onPressed: () {
-            deleteTodo;
-            // removeTodo();
+            widget.deleteTodo!();
           },
-          icon: Image.asset("assets/deleticon.png")),
+          icon: Image.asset(
+            "assets/deleticon.png",
+            height: 20,
+          )),
       //we can not creat a List Remove funcation here because this STL/UI/DartFile/Class can not recgnize the list _todoList
       //and all of over data is stored in it
       //so we have created an funcation in todo_main_ui file and call the funcation here, funcation is recognized all over
@@ -148,7 +142,7 @@ class _TodoTileWidgetState extends State<TodoTileWidget> {
     return Padding(
       padding: const EdgeInsets.only(left: 04, right: 4),
       child: Container(
-        height: 22,
+        height: 20,
         width: 40,
         decoration: BoxDecoration(
           color: const Color(0xff363636),
@@ -170,5 +164,14 @@ class _TodoTileWidgetState extends State<TodoTileWidget> {
         ),
       ),
     );
+  }
+
+  String styleDateandTime(value) {
+    return DateFormat("EEEE, MMM d, yyyy - hh:mm a").format(value);
+    // we import "intl: ^0.18.1" in pubspec and import "import 'package:intl/intl.dart';" to used this DateFormat Property
+    //more properties are on that site
+    //https://i0.wp.com/www.flutterbeads.com/wp-content/uploads/2022/01/watermark_Datetime1.png?resize=492%2C1024&ssl=1
+    //https://i0.wp.com/www.flutterbeads.com/wp-content/uploads/2022/01/watermark_Datetime_custom2x.png?resize=768%2C530&ssl=1
+    // '${todo.todoTime.day}-${todo.todoTime.month}-${todo.todoTime.year}',------------(the old methord)
   }
 }

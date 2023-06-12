@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:todo_app/widgets/todo_tile_widget.dart';
 import 'package:todo_app/screens/todo_empty_ui.dart';
+import 'package:todo_app/models/todo_class.dart';
+import 'package:shared_preferences/shared_preferences.dart'; //to unclock SheredPrefrences
+import 'dart:convert'; //to perfomr/unllock Convrting
 
 class TodoListScreen extends StatefulWidget {
   const TodoListScreen({super.key});
@@ -13,32 +16,31 @@ class TodoListScreen extends StatefulWidget {
 }
 
 class _TodoListScreenState extends State<TodoListScreen> {
-  final List<Todo> _todoList = [];
+  List<Todo> _todoList = [];
   //we have created a to do data Type, just we alreday have lerened in class
   //this list will store all the data we are entring through add funcation
   //this list will show all the data in to do tile
   List<Todo>? _searchedTodoList;
-  //we have created a new verable of Todo Type to store only thoes varibale how contains he serched data (matching data)
-  void _addTodo(
-      String userTitle, String userDescription, DateTime userTodoTime) {
+  //we have created a new verable of Todo Type to store only thoes varibale how contains the serched data (matching data)
+
+  String? userTitle, userDescription;
+  DateTime? userTodoTime;
+  int userPriority = 0;
+  void userPriorityIncrement() {}
+
+  void _addTodo(String userTitle, String userDescription, DateTime userTodoTime,
+      int userPriority) {
     setState(() {
       _todoList.add(Todo(
           title: userTitle,
           description: userDescription,
-          todoTime: userTodoTime));
+          todoTime: userTodoTime,
+          priority: userPriority));
       //an add funcation can add data to to todolist
     });
     Navigator.pop(context);
-  }
-
-  void deleteTodo(todo) {
-    if (todo == null) {
-    } else {
-      setState(() {
-        _todoList.remove(todo);
-        //remove funcation can remove data from todolist
-      });
-    }
+    setData();
+    //we have to  pass this funcation here in add todo to add the by pressing on submit
   }
 
   void searchTodo(String searchedKey) {
@@ -67,9 +69,64 @@ class _TodoListScreenState extends State<TodoListScreen> {
 
   @override
   void initState() {
-    // _addTodo();
-    //we have called _addTodo funcation in instate in so when ouer screen will refresh the funcation will run by it self
+    getData();
+    //We passed the funcation here to get the data by it self when the app restarts
     super.initState();
+  }
+
+  List<String> convertTodolistToStringList() {
+//because SheredPrefrenceCanOnlySupport int,bool,String, double or Lit<String>
+//so we convert Todo Type list (_todoList) to String List
+//as we have created this funcation down from to refresh avery time when screen reload
+
+    // Todo List -> Map list -> STring list
+    //List<Map<String, dynamic>> mens List of map with  Key of String type and Data of Dynamic type
+    List<Map<String, dynamic>> todoInMap =
+        //"tojson" is funcation that we creat onilne with help of the site it works as Class Type to Map Conerter
+        _todoList.map((e) => e.toJson()).toList(); //List<Todo> to List<map>
+//"jsonEncode" is pre bultfuncation by dart that we have added in depndancea in pubspec
+//its work as converter and convert map to List
+    List<String> todoInString = todoInMap
+        .map((e) => jsonEncode(e))
+        .toList(); //List<map> to List<String>
+//this return Statement will work as "todoInStringList"
+    return todoInString;
+  }
+
+//   .
+//   .
+  void convertStringListInToTodoList(List<String> todoInString) {
+    // STring list -> Map list -> Todo list
+    //"jsonDecode" is prebult funcation by dart, added by depandncy
+    //the following line will convert String List to map list
+    List todoInMap = todoInString
+        .map((e) => jsonDecode(e))
+        .toList(); //List<String> to List<map>
+    //"Todo.fromJson" is an funcation that we have created online with help of web.
+    List<Todo> todoInClass = todoInMap
+        .map((e) => Todo.fromJson(e))
+        .toList(); //List<map> to List<Todo>
+
+    setState(() {
+      //finaly we set that _todoList=TodoInClass (a list we have got from shered prfrfrensec or from local storage)
+      _todoList = todoInClass;
+      //now at first _todoList will not be empty now oncw saved data will be saved in local storgae in form of String List
+      //and get that list and convert the list avery time with this function to Class Type Todo List which is redable for the app
+    });
+  }
+
+//this is the way we est data to SheredPrefrences/save data to local mamory
+  Future<void> setData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.setStringList('todo_list', convertTodolistToStringList());
+  }
+
+//this is the way we Get data form SheredPrefrences/get  data from local mamory
+  Future<void> getData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? todoInString = prefs.getStringList('todo_list');
+    convertStringListInToTodoList(todoInString ?? []);
   }
 
   @override
@@ -138,15 +195,24 @@ class _TodoListScreenState extends State<TodoListScreen> {
                         //Indux is a posation number of the widget
                         //"itemBuilder" required a wediget and "itemCount" limits the lenght of the list
 //---------------------------------------------------------------------------------------
-                        Todo serchedtodo = _searchedTodoList != null
-                            //???
-                            ? _searchedTodoList![index]
-                            : _todoList[index];
+                        Todo showedActiveTodo = _searchedTodoList !=
+                                null //if serched llist is null/empty
+                            //showedActiveTodo is a todo data set curently showing at screen and it is type of ToDo
+                            ? _searchedTodoList![
+                                index] //show the searchedTodoList[Index] in TodoTileWidget
+                            : _todoList[
+                                index]; //other vise show _todoList[Index] all todos in todoTileWidget
                         return TodoTileWidget(
-                            todo: serchedtodo,
-                            deleteTodo: (todo) {
+                            //as we define TodoTileWidget required the Todo object (setof Data) todo and a funcation deleteTodo
+                            todo: showedActiveTodo,
+                            //as we have fineded that todo is object (set of data) in the TodoTileWidget Class
+                            //to show the widget its need data and data is in this class in _todoList
+                            //here we define that get todo data to show in widget from ShowedAciveTodo
+                            //where showedActiveData is hole list or just sreched list defined just below
+                            deleteTodo: () {
                               setState(() {
-                                _todoList.remove(todo);
+                                _todoList.removeAt(index);
+                                setData();
                               });
                             });
                         //TodoTileWidget ia an STF class, in this class required the ToDo(Class) object (set of Data) todo
@@ -240,8 +306,6 @@ class _TodoListScreenState extends State<TodoListScreen> {
 //
 
   Widget _showTodoAddbottomSheet() {
-    String? userTitle, userDescription;
-    DateTime? userTodoTime;
     return Padding(
       padding: EdgeInsets.fromLTRB(
           25, 25, 25, MediaQuery.of(context).viewInsets.bottom),
@@ -368,7 +432,17 @@ class _TodoListScreenState extends State<TodoListScreen> {
               const SizedBox(
                 width: 15,
               ),
-              IconButton(onPressed: () {}, icon: Image.asset("assets/tag.png")),
+              IconButton(
+                  onPressed: () {
+                    setState(() {
+                      setState(() {
+                        userPriority++;
+                      });
+                      print(userPriority);
+                    });
+                  },
+                  icon: Image.asset("assets/tag.png")),
+              Text('$userPriority', style: textStyle(12)),
               const SizedBox(
                 width: 15,
               ),
@@ -384,7 +458,8 @@ class _TodoListScreenState extends State<TodoListScreen> {
                     if (userTitle != null &&
                         userDescription != null &&
                         userTodoTime != null) {
-                      _addTodo(userTitle!, userDescription!, userTodoTime!);
+                      _addTodo(userTitle!, userDescription!, userTodoTime!,
+                          userPriority);
                     }
                   },
                   icon: Image.asset("assets/send.png")),
@@ -432,17 +507,4 @@ TextStyle textStyle(double S) {
 
 TextStyle textStlSizeColor(double S, C) {
   return GoogleFonts.lato(fontSize: S, fontWeight: FontWeight.w700, color: C);
-}
-
-class Todo {
-  String title, description;
-  DateTime todoTime;
-  String? tag;
-  int? priority;
-  bool? isCompleted = false;
-
-  Todo(
-      {required this.title, required this.description, required this.todoTime});
-  //{} means named constructer
-  //required mens must to provied
 }
