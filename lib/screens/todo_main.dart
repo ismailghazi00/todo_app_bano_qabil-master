@@ -26,8 +26,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
   String? userTitle, userDescription;
   DateTime? userTodoTime;
   int userPriority = 0;
-  void userPriorityIncrement() {}
-
+  //the veriables where the user data will temprory stored
   void _addTodo(String userTitle, String userDescription, DateTime userTodoTime,
       int userPriority) {
     setState(() {
@@ -65,6 +64,13 @@ class _TodoListScreenState extends State<TodoListScreen> {
         //because we have assigne this data in on change and in setState it will change on run time and no need to submiet
       });
     }
+  }
+
+  void userPrortyIncFuncation() {
+    setState(() {
+      userPriority++;
+      print(userPriority);
+    });
   }
 
   @override
@@ -304,7 +310,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
   }
 
 //
-
+//-------------------------------------BottomShet
   Widget _showTodoAddbottomSheet() {
     return Padding(
       padding: EdgeInsets.fromLTRB(
@@ -434,12 +440,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
               ),
               IconButton(
                   onPressed: () {
-                    setState(() {
-                      setState(() {
-                        userPriority++;
-                      });
-                      print(userPriority);
-                    });
+                    userPrortyIncFuncation();
                   },
                   icon: Image.asset("assets/tag.png")),
               Text('$userPriority', style: textStyle(12)),
