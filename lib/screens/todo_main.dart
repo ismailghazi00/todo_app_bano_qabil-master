@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:todo_app/widgets/todo_tile_widget.dart';
 import 'package:todo_app/screens/todo_empty_ui.dart';
+import 'package:todo_app/models/controller.dart';
 import 'package:todo_app/models/todo_class.dart';
-import 'package:shared_preferences/shared_preferences.dart'; //to unclock SheredPrefrences
-import 'dart:convert'; //to perfomr/unllock Convrting
 
 class TodoListScreen extends StatefulWidget {
   const TodoListScreen({super.key});
@@ -15,57 +14,17 @@ class TodoListScreen extends StatefulWidget {
   State<TodoListScreen> createState() => _TodoListScreenState();
 }
 
+TodoController controller = TodoController();
+
+//Class Name---objectName---Contrecter of Claass (we have to write this line)
+//this is how we access the TodoController's Funcations/Lists etc
+//we will just put the name of object befor the Func/List etc. to use Class's funcations etc like contrller.addTodo controller.todoList and put setstate wehere need
+String? userTitle, userDescription;
+DateTime? userTodoTime;
+int userPriority = 0;
+//the veriables where the user data will temprory stored
+
 class _TodoListScreenState extends State<TodoListScreen> {
-  List<Todo> _todoList = [];
-  //we have created a to do data Type, just we alreday have lerened in class
-  //this list will store all the data we are entring through add funcation
-  //this list will show all the data in to do tile
-  List<Todo>? _searchedTodoList;
-  //we have created a new verable of Todo Type to store only thoes varibale how contains the serched data (matching data)
-
-  String? userTitle, userDescription;
-  DateTime? userTodoTime;
-  int userPriority = 0;
-  //the veriables where the user data will temprory stored
-  void _addTodo(String userTitle, String userDescription, DateTime userTodoTime,
-      int userPriority) {
-    setState(() {
-      _todoList.add(Todo(
-          title: userTitle,
-          description: userDescription,
-          todoTime: userTodoTime,
-          priority: userPriority));
-      //an add funcation can add data to to todolist
-    });
-    Navigator.pop(context);
-    setData();
-    //we have to  pass this funcation here in add todo to add the by pressing on submit
-  }
-
-  void searchTodo(String searchedKey) {
-    //this funcation will take a string searchedKey
-    //once we passed this funcation in textFeild's on change tan it will take serchedKey from on change and perormed bellow funcation
-    if (searchedKey.isEmpty) {
-      setState(() {
-        //it will make srechedList null to show all todo tiles if serchedKey is empty or simply we are not typing in it
-        _searchedTodoList = null;
-      });
-    } else {
-      //else it will prform this funcation
-      List<Todo> result = _todoList
-          //it will get String (What to serch) from serchedKeyand serched by ".where" lokking in title in _todoList and also convert it by ".toList" becaue we have return the list type data
-          .where((element) => element.title.contains(searchedKey))
-          .toList();
-      setState(() {
-        _searchedTodoList = result;
-        //here the result that we have got from above funcation converted in list will assigned to List<Todo> _searchedTodoList that we have created above
-        //and it will latter shown in A TodoTile
-        // to do Tile can show both the Seched List and todo-----------------------------------------------------------------
-        //because we have assigne this data in on change and in setState it will change on run time and no need to submiet
-      });
-    }
-  }
-
   void userPrortyIncFuncation() {
     setState(() {
       userPriority++;
@@ -75,64 +34,12 @@ class _TodoListScreenState extends State<TodoListScreen> {
 
   @override
   void initState() {
-    getData();
-    //We passed the funcation here to get the data by it self when the app restarts
-    super.initState();
-  }
-
-  List<String> convertTodolistToStringList() {
-//because SheredPrefrenceCanOnlySupport int,bool,String, double or Lit<String>
-//so we convert Todo Type list (_todoList) to String List
-//as we have created this funcation down from to refresh avery time when screen reload
-
-    // Todo List -> Map list -> STring list
-    //List<Map<String, dynamic>> mens List of map with  Key of String type and Data of Dynamic type
-    List<Map<String, dynamic>> todoInMap =
-        //"tojson" is funcation that we creat onilne with help of the site it works as Class Type to Map Conerter
-        _todoList.map((e) => e.toJson()).toList(); //List<Todo> to List<map>
-//"jsonEncode" is pre bultfuncation by dart that we have added in depndancea in pubspec
-//its work as converter and convert map to List
-    List<String> todoInString = todoInMap
-        .map((e) => jsonEncode(e))
-        .toList(); //List<map> to List<String>
-//this return Statement will work as "todoInStringList"
-    return todoInString;
-  }
-
-//   .
-//   .
-  void convertStringListInToTodoList(List<String> todoInString) {
-    // STring list -> Map list -> Todo list
-    //"jsonDecode" is prebult funcation by dart, added by depandncy
-    //the following line will convert String List to map list
-    List todoInMap = todoInString
-        .map((e) => jsonDecode(e))
-        .toList(); //List<String> to List<map>
-    //"Todo.fromJson" is an funcation that we have created online with help of web.
-    List<Todo> todoInClass = todoInMap
-        .map((e) => Todo.fromJson(e))
-        .toList(); //List<map> to List<Todo>
-
     setState(() {
-      //finaly we set that _todoList=TodoInClass (a list we have got from shered prfrfrensec or from local storage)
-      _todoList = todoInClass;
-      //now at first _todoList will not be empty now oncw saved data will be saved in local storgae in form of String List
-      //and get that list and convert the list avery time with this function to Class Type Todo List which is redable for the app
+      controller.getData();
+      //We passed the funcation here to get the data by it self when the app restarts
+      //also put this in SetState to set the State at run time
     });
-  }
-
-//this is the way we est data to SheredPrefrences/save data to local mamory
-  Future<void> setData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    await prefs.setStringList('todo_list', convertTodolistToStringList());
-  }
-
-//this is the way we Get data form SheredPrefrences/get  data from local mamory
-  Future<void> getData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String>? todoInString = prefs.getStringList('todo_list');
-    convertStringListInToTodoList(todoInString ?? []);
+    super.initState();
   }
 
   @override
@@ -174,66 +81,68 @@ class _TodoListScreenState extends State<TodoListScreen> {
       ),
 //the floating action button funcation is down  below with all  its propirties
 //we can put thi sbutton any where but there it will align at right botom
-      body: _todoList.isEmpty
-          ? const TodoEmptyScreenWidget()
-          //a pre-buld body widget
-          :
+      body:
+          // controller.todoList.isEmpty
+          //     ? const TodoEmptyScreenWidget()
+          //     //a pre-buld body widget
+          //     :
           //new Center(child: condition == true ? new Container() : new Container())
           // if list is empty show Empty home screen funcation wich have all the body other vise show below one
           Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-              child: Column(
-                children: [
-                  _showSerchTextField(),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  //we use sized box Instade ofPadding
-                  Expanded(
-                    //Expande will use all the rmaing space, if we rape a widget with expaned the wiget (text/Container)  will expanded
-                    //its is some thing like Flexcibel make the eidget flexcebale we can also use propert flex for both
-                    child: ListView.builder(
-                      itemBuilder: ((context, index) {
-                        //"listViewBuilder" is widget to creat aq list view
-                        //"itemBuilder" is required for "listViewBuilder" and it will build a wdiget for list view
-                        //"itemBuilder" is required a funcation (Context, int/Index)
-                        //context and Index is posation of the reurned widget, context is for the App and index is for us
-                        //Indux is a posation number of the widget
-                        //"itemBuilder" required a wediget and "itemCount" limits the lenght of the list
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+        child: Column(
+          children: [
+            _showSerchTextField(),
+            const SizedBox(
+              height: 20,
+            ),
+            //we use sized box Instade ofPadding
+            Expanded(
+              //Expande will use all the rmaing space, if we rape a widget with expaned the wiget (text/Container)  will expanded
+              //its is some thing like Flexcibel make the eidget flexcebale we can also use propert flex for both
+              child: ListView.builder(
+                itemBuilder: ((context, index) {
+                  //"listViewBuilder" is widget to creat aq list view
+                  //"itemBuilder" is required for "listViewBuilder" and it will build a wdiget for list view
+                  //"itemBuilder" is required a funcation (Context, int/Index)
+                  //context and Index is posation of the reurned widget, context is for the App and index is for us
+                  //Indux is a posation number of the widget
+                  //"itemBuilder" required a wediget and "itemCount" limits the lenght of the list
 //---------------------------------------------------------------------------------------
-                        Todo showedActiveTodo = _searchedTodoList !=
-                                null //if serched llist is null/empty
-                            //showedActiveTodo is a todo data set curently showing at screen and it is type of ToDo
-                            ? _searchedTodoList![
-                                index] //show the searchedTodoList[Index] in TodoTileWidget
-                            : _todoList[
-                                index]; //other vise show _todoList[Index] all todos in todoTileWidget
-                        return TodoTileWidget(
-                            //as we define TodoTileWidget required the Todo object (setof Data) todo and a funcation deleteTodo
-                            todo: showedActiveTodo,
-                            //as we have fineded that todo is object (set of data) in the TodoTileWidget Class
-                            //to show the widget its need data and data is in this class in _todoList
-                            //here we define that get todo data to show in widget from ShowedAciveTodo
-                            //where showedActiveData is hole list or just sreched list defined just below
-                            deleteTodo: () {
-                              setState(() {
-                                _todoList.removeAt(index);
-                                setData();
-                              });
-                            });
-                        //TodoTileWidget ia an STF class, in this class required the ToDo(Class) object (set of Data) todo
-                        //and as now we have to show both the data in TodoTileWidget (Basicaly this is a tile) so if we are serching this will show Item and if serch is empty it will show previous data the todo object data
-                      }),
-                      itemCount: _searchedTodoList != null
-                          ? _searchedTodoList!.length
-                          : _todoList.length,
-                      //we changed the auto buld tile count by list lenght, by we will creat tiles as per list lenth.
+                  Todo showedActiveTodo = controller.searchedTodoList !=
+                          null //if serched llist is null/empty
+                      //showedActiveTodo is a todo data set curently showing at screen and it is type of ToDo
+                      ? controller.searchedTodoList![
+                          index] //show the searchedTodoList[Index] in TodoTileWidget
+                      : controller.todoList[
+                          index]; //other vise show _todoList[Index] all todos in todoTileWidget
+                  return TodoTileWidget(
+                      //as we define TodoTileWidget required the Todo object (setof Data) todo and a funcation deleteTodo
+                      todo: showedActiveTodo,
+                      //as we have fineded that todo is object (set of data) in the TodoTileWidget Class
+                      //to show the widget its need data and data is in this class in _todoList
+                      //here we define that get todo data to show in widget from ShowedAciveTodo
+                      //where showedActiveData is hole list or just sreched list defined just below
+                      deleteTodo: () {
+                        setState(() {
+                          controller.todoList.removeAt(index);
+                          controller.setData();
+                          //to setData acording remove
+                        });
+                      });
+                  //TodoTileWidget ia an STF class, in this class required the ToDo(Class) object (set of Data) todo
+                  //and as now we have to show both the data in TodoTileWidget (Basicaly this is a tile) so if we are serching this will show Item and if serch is empty it will show previous data the todo object data
+                }),
+                itemCount: controller.searchedTodoList != null
+                    ? controller.searchedTodoList!.length
+                    : controller.todoList.length,
+                //we changed the auto buld tile count by list lenght, by we will creat tiles as per list lenth.
 //----------------------------------------------------------------------------------------
-                    ),
-                  ),
-                ],
               ),
             ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -276,7 +185,13 @@ class _TodoListScreenState extends State<TodoListScreen> {
 //
   TextField _showSerchTextField() {
     return TextField(
-      onChanged: searchTodo,
+      onChanged: (value) {
+        setState(() {
+          controller.searchTodo(value);
+          //as serchTodo fncatuin need String value (serched Key), and that value will be obtained from text filed.
+          //we wont use SetState in Controler Class sw we use it here
+        });
+      },
       cursorColor: const Color(0xff979797),
       //Blinking line where we type
       style: GoogleFonts.lato(
@@ -459,8 +374,12 @@ class _TodoListScreenState extends State<TodoListScreen> {
                     if (userTitle != null &&
                         userDescription != null &&
                         userTodoTime != null) {
-                      _addTodo(userTitle!, userDescription!, userTodoTime!,
-                          userPriority);
+                      setState(() {
+                        //we call setState here becaue TodoClass cannot SetStae, thatsway we call setState here
+                        controller.addTodo(userTitle!, userDescription!,
+                            userTodoTime!, userPriority, context);
+                        //the Funcation in TodoController Class needs these data to set Data in list specialy Context
+                      });
                     }
                   },
                   icon: Image.asset("assets/send.png")),
