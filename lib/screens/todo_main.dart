@@ -1,11 +1,10 @@
-// ignore_for_file: unnecessary_string_interpolations
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:todo_app/widgets/todo_tile_widget.dart';
 import 'package:todo_app/screens/todo_empty_ui.dart';
 import 'package:todo_app/models/controller.dart';
 import 'package:todo_app/models/todo_class.dart';
+import 'package:todo_app/widgets/bottom_sheet_widget.dart';
 
 class TodoListScreen extends StatefulWidget {
   const TodoListScreen({super.key});
@@ -14,23 +13,16 @@ class TodoListScreen extends StatefulWidget {
   State<TodoListScreen> createState() => _TodoListScreenState();
 }
 
-TodoController controller = TodoController();
+class _TodoListScreenState extends State<TodoListScreen> {
+  TodoController controller = TodoController();
 
 //Class Name---objectName---Contrecter of Claass (we have to write this line)
 //this is how we access the TodoController's Funcations/Lists etc
 //we will just put the name of object befor the Func/List etc. to use Class's funcations etc like contrller.addTodo controller.todoList and put setstate wehere need
-String? userTitle, userDescription;
-DateTime? userTodoTime;
-int userPriority = 0;
+  String? userTitle, userDescription;
+  DateTime? userTodoTime;
+  int userPriority = 0;
 //the veriables where the user data will temprory stored
-
-class _TodoListScreenState extends State<TodoListScreen> {
-  void userPrortyIncFuncation() {
-    setState(() {
-      userPriority++;
-      print(userPriority);
-    });
-  }
 
   @override
   void initState() {
@@ -42,6 +34,13 @@ class _TodoListScreenState extends State<TodoListScreen> {
     super.initState();
   }
 
+  void userPrortyIncFuncation() {
+    setState(() {
+      userPriority++;
+      print(userPriority);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,36 +48,36 @@ class _TodoListScreenState extends State<TodoListScreen> {
       appBar: _showAppBar(),
       //instade of AppBar Hole coed we can only return the funcation
       //and put all the coed down from scaffold in  a funcation  to organizeover code
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showModalBottomSheet(
-
-              //ShowModalBottomSheet is a widget that will apear by pressed on flotting button
-              //this widget is shown in half of screen
-              //its required Context: Context
-              //its also require builder: (Context) to buld w widget in the sheet
-              //we have returened the prebult _ShowTodoAddForm
-              context: context,
-              builder: (context) {
-                return _showTodoAddbottomSheet();
-              },
-              isScrollControlled: true,
-              //to make BottomSheeet Scrollable
-              shape: const RoundedRectangleBorder(
-                  //to give the bottom sheet a shape
-                  //using vertical top broder circullar with value 20 to round ap top adges
-                  borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(20))),
-              backgroundColor: const Color(0xff1d1d1d)
-              //bydeful bottomsheet coloe is white
-              );
-        },
-        backgroundColor: const Color(0xff8687E7),
-        child: const Icon(
-          Icons.add,
-          size: 30,
-        ),
-      ),
+      floatingActionButton: BottomSheetWidget(),
+      // FloatingActionButton(
+      //   onPressed: () {
+      //     showModalBottomSheet(
+      //         //ShowModalBottomSheet is a widget that will apear by pressed on flotting button
+      //         //this widget is shown in half of screen
+      //         //its required Context: Context
+      //         //its also require builder: (Context) to buld w widget in the sheet
+      //         //we have returened the prebult _ShowTodoAddForm
+      //         context: context,
+      //         builder: (context) {
+      //           return _showTodoAddbottomSheet();
+      //         },
+      //         isScrollControlled: true,
+      //         //to make BottomSheeet Scrollable
+      //         shape: const RoundedRectangleBorder(
+      //             //to give the bottom sheet a shape
+      //             //using vertical top broder circullar with value 20 to round ap top adges
+      //             borderRadius:
+      //                 BorderRadius.vertical(top: Radius.circular(20))),
+      //         backgroundColor: const Color(0xff1d1d1d)
+      //         //bydeful bottomsheet coloe is white
+      //         );
+      //   },
+      //   backgroundColor: const Color(0xff8687E7),
+      //   child: const Icon(
+      //     Icons.add,
+      //     size: 30,
+      //   ),
+      // ),
 //the floating action button funcation is down  below with all  its propirties
 //we can put thi sbutton any where but there it will align at right botom
       body:
@@ -331,15 +330,55 @@ class _TodoListScreenState extends State<TodoListScreen> {
               IconButton(
                   onPressed: () async {
                     DateTime? datevalue = await showDatePicker(
-                        // showDatePicker is an option to salek a time and date
-                        //asyns and await is brother and sysetr it will helpe time and date.
-                        //await will holde the coed until we salekt full tme
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime(2025));
+                      // showDatePicker is an option to salect a time and date
+                      //asyns and await is brother and sysetr it will helpe time and date.
+                      //await will holde the coed until we salekt full tme
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime(2025),
+                      //Below methoud/coed is to coller up DatePicker
+                      builder: (context, child) {
+                        return Theme(
+                          data: Theme.of(context).copyWith(
+                            colorScheme: const ColorScheme.light(
+                              primary: Color.fromARGB(255, 105, 105, 105),
+                              onPrimary: Colors.white,
+                              onSurface: Colors.black,
+                            ),
+                            textButtonTheme: TextButtonThemeData(
+                              style: TextButton.styleFrom(
+                                foregroundColor: const Color.fromARGB(
+                                    255, 105, 105, 105), // button text color
+                              ),
+                            ),
+                          ),
+                          child: child!,
+                        );
+                      },
+                    );
                     TimeOfDay? timeValue = await showTimePicker(
-                        context: context, initialTime: TimeOfDay.now());
+                        context: context,
+                        initialTime: TimeOfDay.now(),
+                        //Below methoud/coed is to coller up TimePicker
+                        builder: (context, child) {
+                          return Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: const ColorScheme.light(
+                                primary: Color.fromARGB(255, 105, 105, 105),
+                                onPrimary: Colors.white,
+                                onSurface: Colors.black,
+                              ),
+                              textButtonTheme: TextButtonThemeData(
+                                style: TextButton.styleFrom(
+                                  foregroundColor:
+                                      const Color.fromARGB(255, 105, 105, 105),
+                                ),
+                              ),
+                            ),
+                            child: child!,
+                          );
+                        });
                     //bay a TimePicker we gaet time vale in TimeOfDay Varibale
                     setState(() {
                       //DateTime can hold both the time and date
