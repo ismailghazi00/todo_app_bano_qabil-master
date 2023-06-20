@@ -70,8 +70,13 @@ class TodoController {
     return todoInString;
   }
 
-//   .
-//   .
+//this is the way we est data to SheredPrefrences/save data to local mamory
+  Future<void> setData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.setStringList('todo_list', convertTodolistToStringList());
+  }
+
   void convertStringListInToTodoList(List<String> todoInString) {
     // STring list -> Map list -> Todo list
     //"jsonDecode" is prebult funcation by dart, added by depandncy
@@ -83,19 +88,14 @@ class TodoController {
     List<Todo> todoInClass = todoInMap
         .map((e) => Todo.fromJson(e))
         .toList(); //List<map> to List<Todo>
-
     // setState(() {
     //finaly we set that _todoList=TodoInClass (a list we have got from shered prfrfrensec or from local storage)
     todoList = todoInClass;
+    print('TodoList lenght in Convert Funcation  ${todoList.length}');
+    print('TidiInClass lenght in Convert Funcation ${todoList.length}');
+
     //now at first _todoList will not be empty now oncw saved data will be saved in local storgae in form of String List
     //and get that list and convert the list avery time with this function to Class Type Todo List which is redable for the app
-  }
-
-//this is the way we est data to SheredPrefrences/save data to local mamory
-  Future<void> setData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    await prefs.setStringList('todo_list', convertTodolistToStringList());
   }
 
 //this is the way we Get data form SheredPrefrences/get  data from local mamory
@@ -103,5 +103,6 @@ class TodoController {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String>? todoInString = prefs.getStringList('todo_list');
     convertStringListInToTodoList(todoInString ?? []);
+    print('TodoList lenght in GetData Funcation ${todoList.length}');
   }
 }

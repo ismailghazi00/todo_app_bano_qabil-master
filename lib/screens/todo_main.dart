@@ -26,20 +26,24 @@ class _TodoListScreenState extends State<TodoListScreen> {
 
   @override
   void initState() {
+    print('instSate call hogya');
     setState(() {
       controller.getData();
+      print('List Lenght in steState intstate ${controller.todoList.length}');
+      print('setstate in initsate call hogya');
       //We passed the funcation here to get the data by it self when the app restarts
       //also put this in SetState to set the State at run time
     });
     super.initState();
+    print('List lenght in initSate${controller.todoList.length}');
   }
 
-  void userPrortyIncFuncation() {
-    setState(() {
-      userPriority++;
-      print(userPriority);
-    });
-  }
+  // void userPrortyIncFuncation() {
+  //   setState(() {
+  //     userPriority++;
+  //     print(userPriority);
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -48,100 +52,101 @@ class _TodoListScreenState extends State<TodoListScreen> {
       appBar: _showAppBar(),
       //instade of AppBar Hole coed we can only return the funcation
       //and put all the coed down from scaffold in  a funcation  to organizeover code
-      floatingActionButton: BottomSheetWidget(),
-      // FloatingActionButton(
-      //   onPressed: () {
-      //     showModalBottomSheet(
-      //         //ShowModalBottomSheet is a widget that will apear by pressed on flotting button
-      //         //this widget is shown in half of screen
-      //         //its required Context: Context
-      //         //its also require builder: (Context) to buld w widget in the sheet
-      //         //we have returened the prebult _ShowTodoAddForm
-      //         context: context,
-      //         builder: (context) {
-      //           return _showTodoAddbottomSheet();
-      //         },
-      //         isScrollControlled: true,
-      //         //to make BottomSheeet Scrollable
-      //         shape: const RoundedRectangleBorder(
-      //             //to give the bottom sheet a shape
-      //             //using vertical top broder circullar with value 20 to round ap top adges
-      //             borderRadius:
-      //                 BorderRadius.vertical(top: Radius.circular(20))),
-      //         backgroundColor: const Color(0xff1d1d1d)
-      //         //bydeful bottomsheet coloe is white
-      //         );
-      //   },
-      //   backgroundColor: const Color(0xff8687E7),
-      //   child: const Icon(
-      //     Icons.add,
-      //     size: 30,
-      //   ),
-      // ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showModalBottomSheet(
+              //ShowModalBottomSheet is a widget that will apear by pressed on flotting button
+              //this widget is shown in half of screen
+              //its required Context: Context
+              //its also require builder: (Context) to buld w widget in the sheet
+              //we have returened the prebult _ShowTodoAddForm
+              context: context,
+              builder: (context) {
+                return _showTodoAddbottomSheet();
+              },
+              isScrollControlled: true,
+              //to make BottomSheeet Scrollable
+              shape: const RoundedRectangleBorder(
+                  //to give the bottom sheet a shape
+                  //using vertical top broder circullar with value 20 to round ap top adges
+                  borderRadius:
+                      BorderRadius.vertical(top: Radius.circular(20))),
+              backgroundColor: const Color(0xff1d1d1d)
+              //bydeful bottomsheet coloe is white
+              );
+        },
+        backgroundColor: const Color(0xff8687E7),
+        child: const Icon(
+          Icons.add,
+          size: 30,
+        ),
+      ),
 //the floating action button funcation is down  below with all  its propirties
 //we can put thi sbutton any where but there it will align at right botom
-      body:
-          // controller.todoList.isEmpty
-          //     ? const TodoEmptyScreenWidget()
-          //     //a pre-buld body widget
-          //     :
+      body: controller.todoList.isEmpty
+          ? const TodoEmptyScreenWidget()
+          //a pre-buld body widget
+          :
           //new Center(child: condition == true ? new Container() : new Container())
           // if list is empty show Empty home screen funcation wich have all the body other vise show below one
           Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-        child: Column(
-          children: [
-            _showSerchTextField(),
-            const SizedBox(
-              height: 20,
-            ),
-            //we use sized box Instade ofPadding
-            Expanded(
-              //Expande will use all the rmaing space, if we rape a widget with expaned the wiget (text/Container)  will expanded
-              //its is some thing like Flexcibel make the eidget flexcebale we can also use propert flex for both
-              child: ListView.builder(
-                itemBuilder: ((context, index) {
-                  //"listViewBuilder" is widget to creat aq list view
-                  //"itemBuilder" is required for "listViewBuilder" and it will build a wdiget for list view
-                  //"itemBuilder" is required a funcation (Context, int/Index)
-                  //context and Index is posation of the reurned widget, context is for the App and index is for us
-                  //Indux is a posation number of the widget
-                  //"itemBuilder" required a wediget and "itemCount" limits the lenght of the list
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+              child: Column(
+                children: [
+                  _showSerchTextField(),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  //we use sized box Instade ofPadding
+                  Expanded(
+                    //Expande will use all the rmaing space, if we rape a widget with expaned the wiget (text/Container)  will expanded
+                    //its is some thing like Flexcibel make the eidget flexcebale we can also use propert flex for both
+                    child: ListView.builder(
+                      itemBuilder: ((context, index) {
+                        print('item bulider call hogya');
+                        print(
+                            'List lenght in Item bulider ${controller.todoList.length}');
+                        //"listViewBuilder" is widget to creat aq list view
+                        //"itemBuilder" is required for "listViewBuilder" and it will build a wdiget for list view
+                        //"itemBuilder" is required a funcation (Context, int/Index)
+                        //context and Index is posation of the reurned widget, context is for the App and index is for us
+                        //Indux is a posation number of the widget
+                        //"itemBuilder" required a wediget and "itemCount" limits the lenght of the list
 //---------------------------------------------------------------------------------------
-                  Todo showedActiveTodo = controller.searchedTodoList !=
-                          null //if serched llist is null/empty
-                      //showedActiveTodo is a todo data set curently showing at screen and it is type of ToDo
-                      ? controller.searchedTodoList![
-                          index] //show the searchedTodoList[Index] in TodoTileWidget
-                      : controller.todoList[
-                          index]; //other vise show _todoList[Index] all todos in todoTileWidget
-                  return TodoTileWidget(
-                      //as we define TodoTileWidget required the Todo object (setof Data) todo and a funcation deleteTodo
-                      todo: showedActiveTodo,
-                      //as we have fineded that todo is object (set of data) in the TodoTileWidget Class
-                      //to show the widget its need data and data is in this class in _todoList
-                      //here we define that get todo data to show in widget from ShowedAciveTodo
-                      //where showedActiveData is hole list or just sreched list defined just below
-                      deleteTodo: () {
-                        setState(() {
-                          controller.todoList.removeAt(index);
-                          controller.setData();
-                          //to setData acording remove
-                        });
-                      });
-                  //TodoTileWidget ia an STF class, in this class required the ToDo(Class) object (set of Data) todo
-                  //and as now we have to show both the data in TodoTileWidget (Basicaly this is a tile) so if we are serching this will show Item and if serch is empty it will show previous data the todo object data
-                }),
-                itemCount: controller.searchedTodoList != null
-                    ? controller.searchedTodoList!.length
-                    : controller.todoList.length,
-                //we changed the auto buld tile count by list lenght, by we will creat tiles as per list lenth.
+                        Todo showedActiveTodo = controller.searchedTodoList !=
+                                null //if serched llist is null/empty
+                            //showedActiveTodo is a todo data set curently showing at screen and it is type of ToDo
+                            ? controller.searchedTodoList![
+                                index] //show the searchedTodoList[Index] in TodoTileWidget
+                            : controller.todoList[
+                                index]; //other vise show _todoList[Index] all todos in todoTileWidget
+                        return TodoTileWidget(
+                            //as we define TodoTileWidget required the Todo object (setof Data) todo and a funcation deleteTodo
+                            todo: showedActiveTodo,
+                            //as we have fineded that todo is object (set of data) in the TodoTileWidget Class
+                            //to show the widget its need data and data is in this class in _todoList
+                            //here we define that get todo data to show in widget from ShowedAciveTodo
+                            //where showedActiveData is hole list or just sreched list defined just below
+                            deleteTodo: () {
+                              setState(() {
+                                controller.todoList.removeAt(index);
+                                controller.setData();
+                                //to setData acording remove
+                              });
+                            });
+                        //TodoTileWidget ia an STF class, in this class required the ToDo(Class) object (set of Data) todo
+                        //and as now we have to show both the data in TodoTileWidget (Basicaly this is a tile) so if we are serching this will show Item and if serch is empty it will show previous data the todo object data
+                      }),
+                      itemCount: controller.searchedTodoList != null
+                          ? controller.searchedTodoList!.length
+                          : controller.todoList.length,
+                      //we changed the auto buld tile count by list lenght, by we will creat tiles as per list lenth.
 //----------------------------------------------------------------------------------------
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -394,7 +399,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
               ),
               IconButton(
                   onPressed: () {
-                    userPrortyIncFuncation();
+                    // userPrortyIncFuncation();
                   },
                   icon: Image.asset("assets/tag.png")),
               Text('$userPriority', style: textStyle(12)),

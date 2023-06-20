@@ -56,7 +56,7 @@ class _TodoTileWidgetState extends State<TodoTileWidget> {
                     width: 100,
                   ),
                   _showTageContainerWork(),
-                  const SizedBox(width: 20),
+                  const SizedBox(width: 10),
                   _showTageContainerPraiorty(),
                   const SizedBox(width: 10),
                   _showDeletButton(),
