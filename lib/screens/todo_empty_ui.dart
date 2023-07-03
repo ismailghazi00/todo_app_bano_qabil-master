@@ -24,15 +24,14 @@ class TodoEmptyScreenWidget extends StatelessWidget {
             ),
             Text(
               'What do you want to do today?',
-              style: textStyle(20),
+              style:
+                  Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 20),
             ),
             const SizedBox(
               height: 10,
             ),
-            Text(
-              'Tap + to add your tasks',
-              style: textStyle(16),
-            ),
+            Text('Tap + to add your tasks',
+                style: Theme.of(context).textTheme.bodyMedium),
             // const Expanded(child: SizedBox()),
             // _showAddTaskButton(),
           ],

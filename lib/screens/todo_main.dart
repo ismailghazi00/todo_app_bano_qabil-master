@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:todo_app/widgets/todo_tile_widget.dart';
 import 'package:todo_app/screens/todo_empty_ui.dart';
 import 'package:todo_app/models/controller.dart';
 import 'package:todo_app/models/todo_class.dart';
 import 'package:todo_app/widgets/bottom_sheet_widget.dart';
+
+import '../widgets/add_todo_form_widget.dart';
 
 class TodoListScreen extends StatefulWidget {
   const TodoListScreen({super.key});
@@ -19,23 +20,20 @@ class _TodoListScreenState extends State<TodoListScreen> {
 //Class Name---objectName---Contrecter of Claass (we have to write this line)
 //this is how we access the TodoController's Funcations/Lists etc
 //we will just put the name of object befor the Func/List etc. to use Class's funcations etc like contrller.addTodo controller.todoList and put setstate wehere need
-  String? userTitle, userDescription;
-  DateTime? userTodoTime;
-  int userPriority = 0;
-//the veriables where the user data will temprory stored
+
+  //-----------------------------------------------
+//   String? userTitle, userDescription;
+//   DateTime? userTodoTime;
+//   int userPriority = 0;
+// //the veriables where the user data will temprory stored
 
   @override
   void initState() {
-    print('instSate call hogya');
     setState(() {
-      controller.getData();
-      print('List Lenght in steState intstate ${controller.todoList.length}');
-      print('setstate in initsate call hogya');
-      //We passed the funcation here to get the data by it self when the app restarts
-      //also put this in SetState to set the State at run time
+      controller.getData().then((value) => setState(() {}));
+      //-----------------------------------------------------------------------to understand??????!!!!!!!!!!!!
     });
     super.initState();
-    print('List lenght in initSate${controller.todoList.length}');
   }
 
   // void userPrortyIncFuncation() {
@@ -55,27 +53,21 @@ class _TodoListScreenState extends State<TodoListScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showModalBottomSheet(
-              //ShowModalBottomSheet is a widget that will apear by pressed on flotting button
-              //this widget is shown in half of screen
-              //its required Context: Context
-              //its also require builder: (Context) to buld w widget in the sheet
-              //we have returened the prebult _ShowTodoAddForm
-              context: context,
-              builder: (context) {
-                return _showTodoAddbottomSheet();
-              },
-              isScrollControlled: true,
-              //to make BottomSheeet Scrollable
-              shape: const RoundedRectangleBorder(
-                  //to give the bottom sheet a shape
-                  //using vertical top broder circullar with value 20 to round ap top adges
-                  borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(20))),
-              backgroundColor: const Color(0xff1d1d1d)
-              //bydeful bottomsheet coloe is white
-              );
+            //ShowModalBottomSheet is a widget that will apear by pressed on flotting button
+            //this widget is shown in half of screen
+            //its required Context: Context
+            //its also require builder: (Context) to buld w widget in the sheet
+            //we have returened the prebult _ShowTodoAddForm
+            context: context,
+            builder: (context) {
+              return AddTodoForm(controller: controller);
+              // _showTodoAddbottomSheet();
+            },
+            isScrollControlled: true,
+            //to make BottomSheeet Scrollable
+            //B. Color and Shape is listed in Theme data
+          );
         },
-        backgroundColor: const Color(0xff8687E7),
         child: const Icon(
           Icons.add,
           size: 30,
@@ -157,20 +149,15 @@ class _TodoListScreenState extends State<TodoListScreen> {
 //
   AppBar _showAppBar() {
     return AppBar(
-      backgroundColor: Colors.black,
-      //when we put background color in AppBar its men Appbars's Background Color
       leading: Padding(
         //we use leading for widget at right on Appbar
         padding: const EdgeInsets.only(left: 20),
         child: Image.asset("assets/sort.png"),
       ),
-      title: Text(
+      title: const Text(
         'Todo',
-        style: GoogleFonts.lato(
-          fontWeight: FontWeight.w400,
-          fontSize: 20,
-        ),
       ),
+      //Title Text Style, background color is listed in theme data
       actions: [
         //we use Actions to show 'A List of Widget' on left in Appbar
         //it by dfeult acept list type
@@ -198,11 +185,10 @@ class _TodoListScreenState extends State<TodoListScreen> {
       },
       cursorColor: const Color(0xff979797),
       //Blinking line where we type
-      style: GoogleFonts.lato(
-        fontWeight: FontWeight.w400,
-        fontSize: 16,
-        color: const Color(0xffAFAFAF),
-      ),
+      style: Theme.of(context)
+          .textTheme
+          .bodyLarge
+          ?.copyWith(color: const Color(0xff979797)),
       decoration: InputDecoration(
           fillColor: const Color(0xff1d1d1d),
           filled: true,
@@ -217,11 +203,10 @@ class _TodoListScreenState extends State<TodoListScreen> {
             ),
           ),
           hintText: "Search for your task...",
-          hintStyle: GoogleFonts.lato(
-            fontWeight: FontWeight.w400,
-            fontSize: 16,
-            color: const Color(0xffAFAFAF),
-          ),
+          hintStyle: Theme.of(context)
+              .textTheme
+              .bodyLarge
+              ?.copyWith(color: const Color(0xff979797)),
           border: const OutlineInputBorder(),
           focusedBorder: const OutlineInputBorder(
               borderSide: BorderSide(color: Color(0xff979797)))),
@@ -230,209 +215,209 @@ class _TodoListScreenState extends State<TodoListScreen> {
 
 //
 //-------------------------------------BottomShet
-  Widget _showTodoAddbottomSheet() {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-          25, 25, 25, MediaQuery.of(context).viewInsets.bottom),
-      //mediaQuery class read/collect/have the device data lenght and width
-      // mediaQery.of return this data
-      //now we are telling him that to view the bottom insets(adges/the value or where the botom starts) and start gettinh pading from this changed data
-      // in short this will start from thechanged bottom
-      //it is used when the keborde popups and all the widgets stared after the keborde, for them niw screen starts from keborde top
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        //bydefult column will take all the space avalibale, but its is not good for us this time sio we will give it the above propert to be as minumin as it can
-        children: [
-          Text(
-            'Add Task',
-            style: GoogleFonts.lato(
-              fontSize: 23,
-              color: Colors.white.withOpacity(0.87),
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          //Text Field for title
-          //
-          //
-          TextField(
-            onChanged: (value) {
-              userTitle = value;
-            },
-            cursorColor: const Color(0xff979797),
-            //this style is input text style
-            style: GoogleFonts.lato(
-                fontSize: 18, fontWeight: FontWeight.w400, color: Colors.white),
-            decoration: InputDecoration(
-              //to use border hint text lable and etc we must use Input Decoration class
-              border: const OutlineInputBorder(),
-              //to use border property in text field we must insatate the "border: OutlineInputBorder()"
-              //the to use propirties now we use proprities in "enabled propirties OutlinInputBorder"
-              //this is normal border shows all the time
-              enabledBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(5)),
-                borderSide: BorderSide(color: Color(0xff979797), width: 1),
-              ),
-              //focues border will only show when the curser is focuseed on the text filed
-              focusedBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(5)),
-                borderSide: BorderSide(
-                  color: Color(0xff979797),
-                  width: 2,
-                ),
-              ),
-              //this is hint text and below is hint text styling
-              hintText: 'Title',
-              hintStyle: GoogleFonts.lato(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white.withOpacity(0.87)),
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          //Text Field for Description
-          //
-          //
-          TextField(
-            cursorColor: const Color(0xff979797),
-            onChanged: (value) {
-              userDescription = value;
-            },
-            //this style is input text style
-            style: textStyle(18),
-            decoration: InputDecoration(
-              //to use border hint text lable and etc we must use Input Decoration class
-              border: const OutlineInputBorder(),
-              //to use border property in text field we must insatate the "border: OutlineInputBorder()"
-              //the to use propirties now we use proprities in "enabled propirties OutlinInputBorder"
-              //this is normal border shows all the time
-              enabledBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(5)),
-                borderSide: BorderSide(color: Color(0xff979797), width: 1),
-              ),
-              //focues border will only show when the curser is focuseed on the text filed
-              focusedBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(5)),
-                borderSide: BorderSide(
-                  color: Color(0xff979797),
-                  width: 2,
-                ),
-              ),
-              //this is hint text and below is hint text styling
-              hintText: 'Description',
-              hintStyle: textStyle(16),
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Row(
-            children: [
-              IconButton(
-                  onPressed: () async {
-                    DateTime? datevalue = await showDatePicker(
-                      // showDatePicker is an option to salect a time and date
-                      //asyns and await is brother and sysetr it will helpe time and date.
-                      //await will holde the coed until we salekt full tme
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime(2025),
-                      //Below methoud/coed is to coller up DatePicker
-                      builder: (context, child) {
-                        return Theme(
-                          data: Theme.of(context).copyWith(
-                            colorScheme: const ColorScheme.light(
-                              primary: Color.fromARGB(255, 105, 105, 105),
-                              onPrimary: Colors.white,
-                              onSurface: Colors.black,
-                            ),
-                            textButtonTheme: TextButtonThemeData(
-                              style: TextButton.styleFrom(
-                                foregroundColor: const Color.fromARGB(
-                                    255, 105, 105, 105), // button text color
-                              ),
-                            ),
-                          ),
-                          child: child!,
-                        );
-                      },
-                    );
-                    TimeOfDay? timeValue = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.now(),
-                        //Below methoud/coed is to coller up TimePicker
-                        builder: (context, child) {
-                          return Theme(
-                            data: Theme.of(context).copyWith(
-                              colorScheme: const ColorScheme.light(
-                                primary: Color.fromARGB(255, 105, 105, 105),
-                                onPrimary: Colors.white,
-                                onSurface: Colors.black,
-                              ),
-                              textButtonTheme: TextButtonThemeData(
-                                style: TextButton.styleFrom(
-                                  foregroundColor:
-                                      const Color.fromARGB(255, 105, 105, 105),
-                                ),
-                              ),
-                            ),
-                            child: child!,
-                          );
-                        });
-                    //bay a TimePicker we gaet time vale in TimeOfDay Varibale
-                    setState(() {
-                      //DateTime can hold both the time and date
-                      //but ShowTimePicker can asign its value only to TimeofDay Wich can only hole time
-                      userTodoTime = DateTime(datevalue!.year, datevalue.month,
-                          datevalue.day, timeValue!.hour, timeValue.minute);
-                      //so we have assigne the both values to date verable at once by above methord
-                    });
-                  },
-                  icon: Image.asset("assets/timer.png")),
-              const SizedBox(
-                width: 15,
-              ),
-              IconButton(
-                  onPressed: () {
-                    // userPrortyIncFuncation();
-                  },
-                  icon: Image.asset("assets/tag.png")),
-              Text('$userPriority', style: textStyle(12)),
-              const SizedBox(
-                width: 15,
-              ),
-              IconButton(
-                  onPressed: () {}, icon: Image.asset("assets/flag.png")),
-              const Spacer(),
-              const SizedBox(
-                width: 15,
-              ),
-              const Spacer(),
-              IconButton(
-                  onPressed: () {
-                    if (userTitle != null &&
-                        userDescription != null &&
-                        userTodoTime != null) {
-                      setState(() {
-                        //we call setState here becaue TodoClass cannot SetStae, thatsway we call setState here
-                        controller.addTodo(userTitle!, userDescription!,
-                            userTodoTime!, userPriority, context);
-                        //the Funcation in TodoController Class needs these data to set Data in list specialy Context
-                      });
-                    }
-                  },
-                  icon: Image.asset("assets/send.png")),
-            ],
-          )
-        ],
-      ),
-    );
-  }
+  // Widget _showTodoAddbottomSheet() {
+  //   return Padding(
+  //     padding: EdgeInsets.fromLTRB(
+  //         25, 25, 25, MediaQuery.of(context).viewInsets.bottom),
+  //     //mediaQuery class read/collect/have the device data lenght and width
+  //     // mediaQery.of return this data
+  //     //now we are telling him that to view the bottom insets(adges/the value or where the botom starts) and start gettinh pading from this changed data
+  //     // in short this will start from thechanged bottom
+  //     //it is used when the keborde popups and all the widgets stared after the keborde, for them niw screen starts from keborde top
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       mainAxisSize: MainAxisSize.min,
+  //       //bydefult column will take all the space avalibale, but its is not good for us this time sio we will give it the above propert to be as minumin as it can
+  //       children: [
+  //         Text(
+  //           'Add Task',
+  //           style:
+  //               Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 23),
+  //         ),
+  //         const SizedBox(
+  //           height: 20,
+  //         ),
+  //         //Text Field for title
+  //         //
+  //         //
+  //         TextField(
+  //           onChanged: (value) {
+  //             userTitle = value;
+  //           },
+  //           cursorColor: const Color(0xff979797),
+  //           //this style is input text style
+  //           style: Theme.of(context).textTheme.bodyLarge,
+  //           decoration: InputDecoration(
+  //             //to use border hint text lable and etc we must use Input Decoration class
+  //             border: const OutlineInputBorder(),
+  //             //to use border property in text field we must insatate the "border: OutlineInputBorder()"
+  //             //the to use propirties now we use proprities in "enabled propirties OutlinInputBorder"
+  //             //this is normal border shows all the time
+  //             enabledBorder: const OutlineInputBorder(
+  //               borderRadius: BorderRadius.all(Radius.circular(5)),
+  //               borderSide: BorderSide(color: Color(0xff979797), width: 1),
+  //             ),
+  //             //focues border will only show when the curser is focuseed on the text filed
+  //             focusedBorder: const OutlineInputBorder(
+  //               borderRadius: BorderRadius.all(Radius.circular(5)),
+  //               borderSide: BorderSide(
+  //                 color: Color(0xff979797),
+  //                 width: 2,
+  //               ),
+  //             ),
+  //             //this is hint text and below is hint text styling
+  //             hintText: 'Title',
+  //             hintStyle: Theme.of(context)
+  //                 .textTheme
+  //                 .bodyMedium
+  //                 ?.copyWith(color: Colors.white.withOpacity(0.87)),
+  //           ),
+  //         ),
+  //         const SizedBox(
+  //           height: 10,
+  //         ),
+  //         //Text Field for Description
+  //         //
+  //         //
+  //         TextField(
+  //           cursorColor: const Color(0xff979797),
+  //           onChanged: (value) {
+  //             userDescription = value;
+  //           },
+  //           //this style is input text style
+  //           style: Theme.of(context).textTheme.bodyLarge,
+  //           decoration: InputDecoration(
+  //               //to use border hint text lable and etc we must use Input Decoration class
+  //               border: const OutlineInputBorder(),
+  //               //to use border property in text field we must insatate the "border: OutlineInputBorder()"
+  //               //the to use propirties now we use proprities in "enabled propirties OutlinInputBorder"
+  //               //this is normal border shows all the time
+  //               enabledBorder: const OutlineInputBorder(
+  //                 borderRadius: BorderRadius.all(Radius.circular(5)),
+  //                 borderSide: BorderSide(color: Color(0xff979797), width: 1),
+  //               ),
+  //               //focues border will only show when the curser is focuseed on the text filed
+  //               focusedBorder: const OutlineInputBorder(
+  //                 borderRadius: BorderRadius.all(Radius.circular(5)),
+  //                 borderSide: BorderSide(
+  //                   color: Color(0xff979797),
+  //                   width: 2,
+  //                 ),
+  //               ),
+  //               //this is hint text and below is hint text styling
+  //               hintText: 'Description',
+  //               hintStyle: Theme.of(context)
+  //                   .textTheme
+  //                   .bodyMedium
+  //                   ?.copyWith(color: Colors.white.withOpacity(0.87))),
+  //         ),
+  //         const SizedBox(
+  //           height: 20,
+  //         ),
+  //         Row(
+  //           children: [
+  //             IconButton(
+  //                 onPressed: () async {
+  //                   DateTime? datevalue = await showDatePicker(
+  //                     // showDatePicker is an option to salect a time and date
+  //                     //asyns and await is brother and sysetr it will helpe time and date.
+  //                     //await will holde the coed until we salekt full tme
+  //                     context: context,
+  //                     initialDate: DateTime.now(),
+  //                     firstDate: DateTime.now(),
+  //                     lastDate: DateTime(2025),
+  //                     //Below methoud/coed is to coller up DatePicker
+  //                     builder: (context, child) {
+  //                       return Theme(
+  //                         data: Theme.of(context).copyWith(
+  //                           colorScheme: const ColorScheme.light(
+  //                             primary: Color.fromARGB(255, 105, 105, 105),
+  //                             onPrimary: Colors.white,
+  //                             onSurface: Colors.black,
+  //                           ),
+  //                           textButtonTheme: TextButtonThemeData(
+  //                             style: TextButton.styleFrom(
+  //                               foregroundColor: const Color.fromARGB(
+  //                                   255, 105, 105, 105), // button text color
+  //                             ),
+  //                           ),
+  //                         ),
+  //                         child: child!,
+  //                       );
+  //                     },
+  //                   );
+  //                   TimeOfDay? timeValue = await showTimePicker(
+  //                       context: context,
+  //                       initialTime: TimeOfDay.now(),
+  //                       //Below methoud/coed is to coller up TimePicker
+  //                       builder: (context, child) {
+  //                         return Theme(
+  //                           data: Theme.of(context).copyWith(
+  //                             colorScheme: const ColorScheme.light(
+  //                               primary: Color.fromARGB(255, 105, 105, 105),
+  //                               onPrimary: Colors.white,
+  //                               onSurface: Colors.black,
+  //                             ),
+  //                             textButtonTheme: TextButtonThemeData(
+  //                               style: TextButton.styleFrom(
+  //                                 foregroundColor:
+  //                                     const Color.fromARGB(255, 105, 105, 105),
+  //                               ),
+  //                             ),
+  //                           ),
+  //                           child: child!,
+  //                         );
+  //                       });
+  //                   //bay a TimePicker we gaet time vale in TimeOfDay Varibale
+  //                   setState(() {
+  //                     //DateTime can hold both the time and date
+  //                     //but ShowTimePicker can asign its value only to TimeofDay Wich can only hole time
+  //                     userTodoTime = DateTime(datevalue!.year, datevalue.month,
+  //                         datevalue.day, timeValue!.hour, timeValue.minute);
+  //                     //so we have assigne the both values to date verable at once by above methord
+  //                   });
+  //                 },
+  //                 icon: Image.asset("assets/timer.png")),
+  //             const SizedBox(
+  //               width: 15,
+  //             ),
+  //             IconButton(
+  //                 onPressed: () {
+  //                   // userPrortyIncFuncation();
+  //                 },
+  //                 icon: Image.asset("assets/tag.png")),
+  //             Text('$userPriority',
+  //                 style: Theme.of(context).textTheme.bodySmall),
+  //             const SizedBox(
+  //               width: 15,
+  //             ),
+  //             IconButton(
+  //                 onPressed: () {}, icon: Image.asset("assets/flag.png")),
+  //             const Spacer(),
+  //             const SizedBox(
+  //               width: 15,
+  //             ),
+  //             const Spacer(),
+  //             IconButton(
+  //                 onPressed: () {
+  //                   if (userTitle != null &&
+  //                       userDescription != null &&
+  //                       userTodoTime != null) {
+  //                     setState(() {
+  //                       //we call setState here becaue TodoClass cannot SetStae, thatsway we call setState here
+  //                       controller.addTodo(userTitle!, userDescription!,
+  //                           userTodoTime!, userPriority, context);
+  //                       //the Funcation in TodoController Class needs these data to set Data in list specialy Context
+  //                     });
+  //                   }
+  //                 },
+  //                 icon: Image.asset("assets/send.png")),
+  //           ],
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Padding _showTageContainerHome() {
     return Padding(
@@ -455,20 +440,11 @@ class _TodoListScreenState extends State<TodoListScreen> {
             // ),
             Text(
               'Home',
-              style: textStyle(11),
+              style: Theme.of(context).textTheme.bodySmall,
             )
           ],
         ),
       ),
     );
   }
-}
-
-TextStyle textStyle(double S) {
-  return GoogleFonts.lato(
-      fontSize: S, fontWeight: FontWeight.w700, color: Colors.white);
-}
-
-TextStyle textStlSizeColor(double S, C) {
-  return GoogleFonts.lato(fontSize: S, fontWeight: FontWeight.w700, color: C);
 }

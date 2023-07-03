@@ -41,16 +41,23 @@ class _TodoTileWidgetState extends State<TodoTileWidget> {
               const SizedBox(
                 height: 6,
               ),
-              Text(widget.todo.title, style: textStyle(16)),
+              Text(widget.todo.title,
+                  style: Theme.of(context).textTheme.bodyMedium),
               Text(
                 widget.todo.description,
-                style: textStlSizeColor(15, Colors.grey),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: Colors.grey),
               ),
               Row(
                 children: [
                   Text(
                     styleDateandTime(widget.todo.todoTime),
-                    style: textStlSizeColor(15, Colors.grey),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: Colors.grey),
                   ),
                   const SizedBox(
                     width: 100,
@@ -88,10 +95,7 @@ class _TodoTileWidgetState extends State<TodoTileWidget> {
             // const SizedBox(
             //   width: 1,
             // ),
-            Text(
-              'Work',
-              style: textStyle(11),
-            )
+            Text('Work', style: Theme.of(context).textTheme.bodySmall)
           ],
         ),
       ),
@@ -158,7 +162,7 @@ class _TodoTileWidgetState extends State<TodoTileWidget> {
             ),
             Text(
               '3',
-              style: textStyle(11),
+              style: Theme.of(context).textTheme.bodySmall,
             )
           ],
         ),

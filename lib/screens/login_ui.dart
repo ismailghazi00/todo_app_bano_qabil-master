@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:todo_app/screens/todo_main.dart';
 
 class LogInScreen extends StatelessWidget {
@@ -17,15 +16,17 @@ class LogInScreen extends StatelessWidget {
           children: [
             Text(
               'Login',
-              style: textStyle(32),
+              style:
+                  Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 32),
             ),
             const SizedBox(height: 30),
             Padding(
               padding: const EdgeInsets.only(top: 5, bottom: 5),
-              child: Text('Usernmae', style: textStyle(16)),
+              child: Text('Usernmae',
+                  style: Theme.of(context).textTheme.bodyMedium),
             ),
             TextField(
-                style: textStyle(15),
+                style: Theme.of(context).textTheme.bodyMedium,
                 cursorColor: const Color(0xff979797),
                 decoration: InputDecoration(
                     border: const OutlineInputBorder(),
@@ -36,10 +37,11 @@ class LogInScreen extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.only(top: 5, bottom: 5),
-              child: Text('Password', style: textStyle(16)),
+              child: Text('Password',
+                  style: Theme.of(context).textTheme.bodyMedium),
             ),
             TextField(
-                style: textStyle(15),
+                style: Theme.of(context).textTheme.bodyMedium,
                 obscureText: true,
                 cursorColor: const Color(0xff979797),
                 decoration: InputDecoration(
@@ -63,7 +65,7 @@ class LogInScreen extends StatelessWidget {
                         minimumSize: const Size(327, 55)),
                     child: Text(
                       'Login',
-                      style: textStyle(16),
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
                 ),
@@ -73,13 +75,6 @@ class LogInScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  TextStyle textStyle(double w) {
-    return GoogleFonts.lato(
-        fontSize: w == null ? 16 : w,
-        fontWeight: FontWeight.w700,
-        color: Colors.white);
   }
 
   OutlineInputBorder borderOutlineStyle() {
