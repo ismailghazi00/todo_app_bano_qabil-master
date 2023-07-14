@@ -6,6 +6,8 @@ import 'package:todo_app/models/todo_class.dart';
 import 'package:todo_app/widgets/bottom_sheet_widget.dart';
 
 import '../widgets/add_todo_form_widget.dart';
+import '../widgets/drawer.dart';
+import '../widgets/serch_text_field.dart';
 
 class TodoListScreen extends StatefulWidget {
   const TodoListScreen({super.key});
@@ -16,63 +18,47 @@ class TodoListScreen extends StatefulWidget {
 
 class _TodoListScreenState extends State<TodoListScreen> {
   TodoController controller = TodoController();
+  final GlobalKey<ScaffoldState> _key = GlobalKey();
 
 //Class Name---objectName---Contrecter of Claass (we have to write this line)
 //this is how we access the TodoController's Funcations/Lists etc
 //we will just put the name of object befor the Func/List etc. to use Class's funcations etc like contrller.addTodo controller.todoList and put setstate wehere need
 
-  //-----------------------------------------------
-//   String? userTitle, userDescription;
-//   DateTime? userTodoTime;
-//   int userPriority = 0;
-// //the veriables where the user data will temprory stored
-
   @override
   void initState() {
     setState(() {
       controller.getData().then((value) => setState(() {}));
-      //-----------------------------------------------------------------------to understand??????!!!!!!!!!!!!
     });
     super.initState();
   }
 
-  // void userPrortyIncFuncation() {
-  //   setState(() {
-  //     userPriority++;
-  //     print(userPriority);
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _key, // Assign the key to Scaffold. use to assign drawer tothe buton
       backgroundColor: Colors.black,
       appBar: _showAppBar(),
       //instade of AppBar Hole coed we can only return the funcation
       //and put all the coed down from scaffold in  a funcation  to organizeover code
+      drawer: const Drawer(child: DrawerWidget()),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showModalBottomSheet(
-            //ShowModalBottomSheet is a widget that will apear by pressed on flotting button
-            //this widget is shown in half of screen
-            //its required Context: Context
-            //its also require builder: (Context) to buld w widget in the sheet
-            //we have returened the prebult _ShowTodoAddForm
-            context: context,
-            builder: (context) {
-              return AddTodoForm(controller: controller);
-              // _showTodoAddbottomSheet();
-            },
-            isScrollControlled: true,
-            //to make BottomSheeet Scrollable
-            //B. Color and Shape is listed in Theme data
-          );
-        },
-        child: const Icon(
-          Icons.add,
-          size: 30,
-        ),
-      ),
+          onPressed: () {
+            showModalBottomSheet(
+              //ShowModalBottomSheet is a widget that will apear by pressed on flotting button
+              //this widget is shown in half of screen
+              //its required Context: Context
+              //its also require builder: (Context) to buld w widget in the sheet
+              //we have returened the prebult _ShowTodoAddForm
+              context: context,
+              builder: (context) {
+                return AddTodoForm(controller: controller);
+              },
+              isScrollControlled: true, //to make BottomSheeet Scrollable
+            ).then((value) => setState(() {}));
+            //after performing the funcation set state in that page/screen also
+            //because adding a Todo wont reflict in this page wo we need to set State in this page to
+          },
+          child: const Icon(Icons.add, size: 30, color: Colors.white)),
 //the floating action button funcation is down  below with all  its propirties
 //we can put thi sbutton any where but there it will align at right botom
       body: controller.todoList.isEmpty
@@ -85,7 +71,8 @@ class _TodoListScreenState extends State<TodoListScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
               child: Column(
                 children: [
-                  _showSerchTextField(),
+                  SerchTextField(controller: controller ),
+                  //as this need controller.SerchedList so we have to give it contrller in peramater
                   const SizedBox(
                     height: 20,
                   ),
@@ -95,16 +82,13 @@ class _TodoListScreenState extends State<TodoListScreen> {
                     //its is some thing like Flexcibel make the eidget flexcebale we can also use propert flex for both
                     child: ListView.builder(
                       itemBuilder: ((context, index) {
-                        print('item bulider call hogya');
-                        print(
-                            'List lenght in Item bulider ${controller.todoList.length}');
                         //"listViewBuilder" is widget to creat aq list view
                         //"itemBuilder" is required for "listViewBuilder" and it will build a wdiget for list view
                         //"itemBuilder" is required a funcation (Context, int/Index)
                         //context and Index is posation of the reurned widget, context is for the App and index is for us
                         //Indux is a posation number of the widget
                         //"itemBuilder" required a wediget and "itemCount" limits the lenght of the list
-//---------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
                         Todo showedActiveTodo = controller.searchedTodoList !=
                                 null //if serched llist is null/empty
                             //showedActiveTodo is a todo data set curently showing at screen and it is type of ToDo
@@ -133,7 +117,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
                           ? controller.searchedTodoList!.length
                           : controller.todoList.length,
                       //we changed the auto buld tile count by list lenght, by we will creat tiles as per list lenth.
-//----------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
                     ),
                   ),
                 ],
@@ -144,16 +128,19 @@ class _TodoListScreenState extends State<TodoListScreen> {
 
 ////The Code Behaind the Screen///
 
-//
   //App Bar Funcation
 //
   AppBar _showAppBar() {
+    //-------------------------------------------AppBarCoed
     return AppBar(
       leading: Padding(
-        //we use leading for widget at right on Appbar
-        padding: const EdgeInsets.only(left: 20),
-        child: Image.asset("assets/sort.png"),
-      ),
+          //we use leading for widget at right on Appbar
+          padding: const EdgeInsets.only(left: 20),
+          child: InkWell(
+            //image at ritght now works as the Drawer Button
+            onTap: () => _key.currentState!.openDrawer(),
+            child: Image.asset("assets/sort.png"),
+          )),
       title: const Text(
         'Todo',
       ),
@@ -172,252 +159,6 @@ class _TodoListScreenState extends State<TodoListScreen> {
       ],
     );
   }
-
-//
-  TextField _showSerchTextField() {
-    return TextField(
-      onChanged: (value) {
-        setState(() {
-          controller.searchTodo(value);
-          //as serchTodo fncatuin need String value (serched Key), and that value will be obtained from text filed.
-          //we wont use SetState in Controler Class sw we use it here
-        });
-      },
-      cursorColor: const Color(0xff979797),
-      //Blinking line where we type
-      style: Theme.of(context)
-          .textTheme
-          .bodyLarge
-          ?.copyWith(color: const Color(0xff979797)),
-      decoration: InputDecoration(
-          fillColor: const Color(0xff1d1d1d),
-          filled: true,
-          prefixIcon: Padding(
-            //the icon show at right in text field
-            //we use also suffixIcon to show icon at left
-            padding: const EdgeInsets.all(8.0),
-            child: Image.asset(
-              "assets/search.png",
-              height: 24,
-              width: 24,
-            ),
-          ),
-          hintText: "Search for your task...",
-          hintStyle: Theme.of(context)
-              .textTheme
-              .bodyLarge
-              ?.copyWith(color: const Color(0xff979797)),
-          border: const OutlineInputBorder(),
-          focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xff979797)))),
-    );
-  }
-
-//
-//-------------------------------------BottomShet
-  // Widget _showTodoAddbottomSheet() {
-  //   return Padding(
-  //     padding: EdgeInsets.fromLTRB(
-  //         25, 25, 25, MediaQuery.of(context).viewInsets.bottom),
-  //     //mediaQuery class read/collect/have the device data lenght and width
-  //     // mediaQery.of return this data
-  //     //now we are telling him that to view the bottom insets(adges/the value or where the botom starts) and start gettinh pading from this changed data
-  //     // in short this will start from thechanged bottom
-  //     //it is used when the keborde popups and all the widgets stared after the keborde, for them niw screen starts from keborde top
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       mainAxisSize: MainAxisSize.min,
-  //       //bydefult column will take all the space avalibale, but its is not good for us this time sio we will give it the above propert to be as minumin as it can
-  //       children: [
-  //         Text(
-  //           'Add Task',
-  //           style:
-  //               Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 23),
-  //         ),
-  //         const SizedBox(
-  //           height: 20,
-  //         ),
-  //         //Text Field for title
-  //         //
-  //         //
-  //         TextField(
-  //           onChanged: (value) {
-  //             userTitle = value;
-  //           },
-  //           cursorColor: const Color(0xff979797),
-  //           //this style is input text style
-  //           style: Theme.of(context).textTheme.bodyLarge,
-  //           decoration: InputDecoration(
-  //             //to use border hint text lable and etc we must use Input Decoration class
-  //             border: const OutlineInputBorder(),
-  //             //to use border property in text field we must insatate the "border: OutlineInputBorder()"
-  //             //the to use propirties now we use proprities in "enabled propirties OutlinInputBorder"
-  //             //this is normal border shows all the time
-  //             enabledBorder: const OutlineInputBorder(
-  //               borderRadius: BorderRadius.all(Radius.circular(5)),
-  //               borderSide: BorderSide(color: Color(0xff979797), width: 1),
-  //             ),
-  //             //focues border will only show when the curser is focuseed on the text filed
-  //             focusedBorder: const OutlineInputBorder(
-  //               borderRadius: BorderRadius.all(Radius.circular(5)),
-  //               borderSide: BorderSide(
-  //                 color: Color(0xff979797),
-  //                 width: 2,
-  //               ),
-  //             ),
-  //             //this is hint text and below is hint text styling
-  //             hintText: 'Title',
-  //             hintStyle: Theme.of(context)
-  //                 .textTheme
-  //                 .bodyMedium
-  //                 ?.copyWith(color: Colors.white.withOpacity(0.87)),
-  //           ),
-  //         ),
-  //         const SizedBox(
-  //           height: 10,
-  //         ),
-  //         //Text Field for Description
-  //         //
-  //         //
-  //         TextField(
-  //           cursorColor: const Color(0xff979797),
-  //           onChanged: (value) {
-  //             userDescription = value;
-  //           },
-  //           //this style is input text style
-  //           style: Theme.of(context).textTheme.bodyLarge,
-  //           decoration: InputDecoration(
-  //               //to use border hint text lable and etc we must use Input Decoration class
-  //               border: const OutlineInputBorder(),
-  //               //to use border property in text field we must insatate the "border: OutlineInputBorder()"
-  //               //the to use propirties now we use proprities in "enabled propirties OutlinInputBorder"
-  //               //this is normal border shows all the time
-  //               enabledBorder: const OutlineInputBorder(
-  //                 borderRadius: BorderRadius.all(Radius.circular(5)),
-  //                 borderSide: BorderSide(color: Color(0xff979797), width: 1),
-  //               ),
-  //               //focues border will only show when the curser is focuseed on the text filed
-  //               focusedBorder: const OutlineInputBorder(
-  //                 borderRadius: BorderRadius.all(Radius.circular(5)),
-  //                 borderSide: BorderSide(
-  //                   color: Color(0xff979797),
-  //                   width: 2,
-  //                 ),
-  //               ),
-  //               //this is hint text and below is hint text styling
-  //               hintText: 'Description',
-  //               hintStyle: Theme.of(context)
-  //                   .textTheme
-  //                   .bodyMedium
-  //                   ?.copyWith(color: Colors.white.withOpacity(0.87))),
-  //         ),
-  //         const SizedBox(
-  //           height: 20,
-  //         ),
-  //         Row(
-  //           children: [
-  //             IconButton(
-  //                 onPressed: () async {
-  //                   DateTime? datevalue = await showDatePicker(
-  //                     // showDatePicker is an option to salect a time and date
-  //                     //asyns and await is brother and sysetr it will helpe time and date.
-  //                     //await will holde the coed until we salekt full tme
-  //                     context: context,
-  //                     initialDate: DateTime.now(),
-  //                     firstDate: DateTime.now(),
-  //                     lastDate: DateTime(2025),
-  //                     //Below methoud/coed is to coller up DatePicker
-  //                     builder: (context, child) {
-  //                       return Theme(
-  //                         data: Theme.of(context).copyWith(
-  //                           colorScheme: const ColorScheme.light(
-  //                             primary: Color.fromARGB(255, 105, 105, 105),
-  //                             onPrimary: Colors.white,
-  //                             onSurface: Colors.black,
-  //                           ),
-  //                           textButtonTheme: TextButtonThemeData(
-  //                             style: TextButton.styleFrom(
-  //                               foregroundColor: const Color.fromARGB(
-  //                                   255, 105, 105, 105), // button text color
-  //                             ),
-  //                           ),
-  //                         ),
-  //                         child: child!,
-  //                       );
-  //                     },
-  //                   );
-  //                   TimeOfDay? timeValue = await showTimePicker(
-  //                       context: context,
-  //                       initialTime: TimeOfDay.now(),
-  //                       //Below methoud/coed is to coller up TimePicker
-  //                       builder: (context, child) {
-  //                         return Theme(
-  //                           data: Theme.of(context).copyWith(
-  //                             colorScheme: const ColorScheme.light(
-  //                               primary: Color.fromARGB(255, 105, 105, 105),
-  //                               onPrimary: Colors.white,
-  //                               onSurface: Colors.black,
-  //                             ),
-  //                             textButtonTheme: TextButtonThemeData(
-  //                               style: TextButton.styleFrom(
-  //                                 foregroundColor:
-  //                                     const Color.fromARGB(255, 105, 105, 105),
-  //                               ),
-  //                             ),
-  //                           ),
-  //                           child: child!,
-  //                         );
-  //                       });
-  //                   //bay a TimePicker we gaet time vale in TimeOfDay Varibale
-  //                   setState(() {
-  //                     //DateTime can hold both the time and date
-  //                     //but ShowTimePicker can asign its value only to TimeofDay Wich can only hole time
-  //                     userTodoTime = DateTime(datevalue!.year, datevalue.month,
-  //                         datevalue.day, timeValue!.hour, timeValue.minute);
-  //                     //so we have assigne the both values to date verable at once by above methord
-  //                   });
-  //                 },
-  //                 icon: Image.asset("assets/timer.png")),
-  //             const SizedBox(
-  //               width: 15,
-  //             ),
-  //             IconButton(
-  //                 onPressed: () {
-  //                   // userPrortyIncFuncation();
-  //                 },
-  //                 icon: Image.asset("assets/tag.png")),
-  //             Text('$userPriority',
-  //                 style: Theme.of(context).textTheme.bodySmall),
-  //             const SizedBox(
-  //               width: 15,
-  //             ),
-  //             IconButton(
-  //                 onPressed: () {}, icon: Image.asset("assets/flag.png")),
-  //             const Spacer(),
-  //             const SizedBox(
-  //               width: 15,
-  //             ),
-  //             const Spacer(),
-  //             IconButton(
-  //                 onPressed: () {
-  //                   if (userTitle != null &&
-  //                       userDescription != null &&
-  //                       userTodoTime != null) {
-  //                     setState(() {
-  //                       //we call setState here becaue TodoClass cannot SetStae, thatsway we call setState here
-  //                       controller.addTodo(userTitle!, userDescription!,
-  //                           userTodoTime!, userPriority, context);
-  //                       //the Funcation in TodoController Class needs these data to set Data in list specialy Context
-  //                     });
-  //                   }
-  //                 },
-  //                 icon: Image.asset("assets/send.png")),
-  //           ],
-  //         )
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Padding _showTageContainerHome() {
     return Padding(

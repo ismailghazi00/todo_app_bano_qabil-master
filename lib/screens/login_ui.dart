@@ -1,8 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/screens/splash_screen.dart';
 import 'package:todo_app/screens/todo_main.dart';
 
-class LogInScreen extends StatelessWidget {
+class LogInScreen extends StatefulWidget {
   const LogInScreen({super.key});
+
+  @override
+  State<LogInScreen> createState() => _LogInScreenState();
+}
+
+class _LogInScreenState extends State<LogInScreen> {
+  void swtichtheSplashScreen() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const TodoListScreen(),
+        ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,10 +69,13 @@ class LogInScreen extends StatelessWidget {
                   //if we applay expanded in row it will expened in widthe else the widget raped in expanded will epnded in all the space avalibale n hight
                   child: ElevatedButton(
                     onPressed: () {
+                      Future.delayed(
+                          const Duration(seconds: 2), swtichtheSplashScreen);
+                      //Future.delayed will perform the funcation (discribed at the end) after the duration discribed in Duration
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const TodoListScreen()));
+                              builder: (context) => const SplashScreen()));
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xff8687E7),

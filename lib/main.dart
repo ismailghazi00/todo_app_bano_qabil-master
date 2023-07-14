@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:todo_app/screens/login_ui.dart';
+import 'package:todo_app/screens/splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -44,6 +45,18 @@ class MyApp extends StatelessWidget {
           bodySmall: GoogleFonts.lato(
               fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white),
         ),
+        colorScheme: const ColorScheme(
+            brightness: Brightness.dark,
+            primary: Color(0xff8687E7),
+            onPrimary: Colors.white,
+            secondary: Color(0xff363636),
+            onSecondary: Colors.grey,
+            error: Colors.red,
+            onError: Colors.white,
+            background: Colors.black,
+            onBackground: Colors.white,
+            surface: Color(0xff8687E7),
+            onSurface: Colors.white),
 
         primarySwatch: Colors.blue,
       ),

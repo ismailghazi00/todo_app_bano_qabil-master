@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/screens/todo_main.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:todo_app/models/controller.dart';
 
 class AddTodoForm extends StatefulWidget {
@@ -19,7 +18,6 @@ class _AddTodoFormState extends State<AddTodoForm> {
   void userPrortyIncFuncation() {
     setState(() {
       userPriority++;
-      print(userPriority);
     });
   }
 
@@ -50,38 +48,15 @@ class _AddTodoFormState extends State<AddTodoForm> {
           //
           //
           TextField(
-            onChanged: (value) {
-              userTitle = value;
-            },
-            cursorColor: const Color(0xff979797),
-            //this style is input text style
-            style: Theme.of(context).textTheme.bodyLarge,
-            decoration: InputDecoration(
-              //to use border hint text lable and etc we must use Input Decoration class
-              border: const OutlineInputBorder(),
-              //to use border property in text field we must insatate the "border: OutlineInputBorder()"
-              //the to use propirties now we use proprities in "enabled propirties OutlinInputBorder"
-              //this is normal border shows all the time
-              enabledBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(5)),
-                borderSide: BorderSide(color: Color(0xff979797), width: 1),
+              onChanged: (value) {
+                userTitle = value;
+              },
+              cursorColor: const Color(0xff979797),
+              //this style is input text style
+              style: Theme.of(context).textTheme.bodyLarge,
+              decoration: textFieldCustomDecuration('Title')
+              //A pre bulid Custom Input Decoratin Style with required peramaetr Hint Text
               ),
-              //focues border will only show when the curser is focuseed on the text filed
-              focusedBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(5)),
-                borderSide: BorderSide(
-                  color: Color(0xff979797),
-                  width: 2,
-                ),
-              ),
-              //this is hint text and below is hint text styling
-              hintText: 'Title',
-              hintStyle: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: Colors.white.withOpacity(0.87)),
-            ),
-          ),
           const SizedBox(
             height: 10,
           ),
@@ -95,30 +70,8 @@ class _AddTodoFormState extends State<AddTodoForm> {
             },
             //this style is input text style
             style: Theme.of(context).textTheme.bodyLarge,
-            decoration: InputDecoration(
-                //to use border hint text lable and etc we must use Input Decoration class
-                border: const OutlineInputBorder(),
-                //to use border property in text field we must insatate the "border: OutlineInputBorder()"
-                //the to use propirties now we use proprities in "enabled propirties OutlinInputBorder"
-                //this is normal border shows all the time
-                enabledBorder: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
-                  borderSide: BorderSide(color: Color(0xff979797), width: 1),
-                ),
-                //focues border will only show when the curser is focuseed on the text filed
-                focusedBorder: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
-                  borderSide: BorderSide(
-                    color: Color(0xff979797),
-                    width: 2,
-                  ),
-                ),
-                //this is hint text and below is hint text styling
-                hintText: 'Description',
-                hintStyle: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: Colors.white.withOpacity(0.87))),
+            decoration: textFieldCustomDecuration('Description'),
+            //A pre bulid Custom Input Decoratin Style with required peramaetr Hint Text
           ),
           const SizedBox(
             height: 20,
@@ -135,26 +88,9 @@ class _AddTodoFormState extends State<AddTodoForm> {
                       initialDate: DateTime.now(),
                       firstDate: DateTime.now(),
                       lastDate: DateTime(2025),
-                      //Below methoud/coed is to coller up DatePicker
-                      builder: (context, child) {
-                        return Theme(
-                          data: Theme.of(context).copyWith(
-                            colorScheme: const ColorScheme.light(
-                              primary: Color.fromARGB(255, 105, 105, 105),
-                              onPrimary: Colors.white,
-                              onSurface: Colors.black,
-                            ),
-                            textButtonTheme: TextButtonThemeData(
-                              style: TextButton.styleFrom(
-                                foregroundColor: const Color.fromARGB(
-                                    255, 105, 105, 105), // button text color
-                              ),
-                            ),
-                          ),
-                          child: child!,
-                        );
-                      },
+                      //Color Scheem of Date Picker comes form the color scheem we difined in Theme data main.dart
                     );
+                    // ignore: use_build_context_synchronously
                     TimeOfDay? timeValue = await showTimePicker(
                         context: context,
                         initialTime: TimeOfDay.now(),
@@ -162,15 +98,17 @@ class _AddTodoFormState extends State<AddTodoForm> {
                         builder: (context, child) {
                           return Theme(
                             data: Theme.of(context).copyWith(
-                              colorScheme: const ColorScheme.light(
-                                primary: Color.fromARGB(255, 105, 105, 105),
+                              colorScheme: const ColorScheme.dark(
+                                primary: Color(0xff8687E7),
                                 onPrimary: Colors.white,
-                                onSurface: Colors.black,
+                                surface: Color(0xff363636),
+                                onSurface: Colors.white,
+                                secondary: Color(0xff363636),
+                                onSecondary: Color(0xff8687E7),
                               ),
                               textButtonTheme: TextButtonThemeData(
                                 style: TextButton.styleFrom(
-                                  foregroundColor:
-                                      const Color.fromARGB(255, 105, 105, 105),
+                                  foregroundColor: const Color(0xff8687E7),
                                 ),
                               ),
                             ),
@@ -216,10 +154,8 @@ class _AddTodoFormState extends State<AddTodoForm> {
                         //we call setState here becaue TodoClass cannot SetStae, thatsway we call setState here
                         widget.controller?.addTodo(userTitle!, userDescription!,
                             userTodoTime!, userPriority, context);
-                        await widget.controller
-                            ?.setData()
-                            .then((value) => setState(() {}));
                         //the Funcation in TodoController Class needs these data to set Data in list specialy Context
+                        await widget.controller?.setData();
                       });
                     }
                   },
@@ -228,6 +164,34 @@ class _AddTodoFormState extends State<AddTodoForm> {
           )
         ],
       ),
+    );
+  }
+
+  InputDecoration textFieldCustomDecuration(String hinttext) {
+    return InputDecoration(
+      //to use border hint text lable and etc we must use Input Decoration class
+      border: const OutlineInputBorder(),
+
+      enabledBorder: //to use border property in text field we must insatate the "border: OutlineInputBorder()"
+          //the to use propirties now we use proprities in "enabled propirties OutlinInputBorder"
+          //this is normal border shows all the time
+          const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+              borderSide: BorderSide(color: Color(0xff979797), width: 1)),
+      //focues border will only show when the curser is focuseed on the text filed
+      focusedBorder: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(5)),
+        borderSide: BorderSide(
+          color: Color(0xff979797),
+          width: 2,
+        ),
+      ),
+      //this is hint text and below is hint text styling
+      hintText: hinttext,
+      hintStyle: Theme.of(context)
+          .textTheme
+          .bodyMedium
+          ?.copyWith(color: Colors.white.withOpacity(0.87)),
     );
   }
 }
