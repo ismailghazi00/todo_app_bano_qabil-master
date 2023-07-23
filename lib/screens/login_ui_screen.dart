@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/screens/splash_screen.dart';
-import 'package:todo_app/screens/todo_main.dart';
+import 'package:todo_app/screens/splash_ui.dart';
+import 'package:todo_app/screens/todo_list_ui.dart';
 
 class LogInScreen extends StatefulWidget {
   const LogInScreen({super.key});

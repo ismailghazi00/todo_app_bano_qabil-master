@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import '../models/controller.dart'; //to use Controller's SercheList line 20
 
 class SerchTextField extends StatefulWidget {
-   const SerchTextField({super.key, this.controller});
   final TodoController? controller;
   //As This class dont recognize Controller, and we have to use it
   //for that we have to import the controller by peramater, and also initilize it line 06
+  final Function setTheState; //Initilized the function called by perameter
+  const SerchTextField({super.key, this.controller, required this.setTheState});
 
   @override
   State<SerchTextField> createState() => _SerchTextFieldState();
@@ -16,11 +17,8 @@ class _SerchTextFieldState extends State<SerchTextField> {
   Widget build(BuildContext context) {
     return TextField(
       onChanged: (value) {
-        setState(() {
-          widget.controller?.searchTodo(value);
-          //as serchTodo fncatuin need String value (serched Key), and that value will be obtained from text filed.
-          // as this class dont recognize the Controller so we will call it by perameter
-        });
+        widget.controller?.searchTodo(value);
+        widget.setTheState();
       },
       cursorColor: const Color(0xff979797),
       //Blinking line where we type

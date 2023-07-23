@@ -34,42 +34,41 @@ class _TodoTileWidgetState extends State<TodoTileWidget> {
         children: [
           _showChexbox(),
           Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(
-                height: 6,
-              ),
-              Text(widget.todo.title,
-                  style: Theme.of(context).textTheme.bodyMedium),
-              Text(
-                widget.todo.description,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: Colors.grey),
-              ),
-              Row(
-                children: [
-                  Text(
-                    styleDateandTime(widget.todo.todoTime),
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(color: Colors.grey),
-                  ),
-                  const SizedBox(
-                    width: 100,
-                  ),
-                  _showTageContainerWork(),
-                  const SizedBox(width: 10),
-                  _showTageContainerPraiorty(),
-                  const SizedBox(width: 10),
-                  _showDeletButton(),
-                ],
-              )
-            ],
-          )
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(widget.todo.title,
+                    style: Theme.of(context).textTheme.bodyMedium),
+                Text(
+                  widget.todo.description,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: Colors.grey),
+                ),
+                Text(
+                  styleDateandTime(widget.todo.todoTime),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: Colors.grey),
+                ),
+              ]),
+          Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+            const SizedBox(width: 30),
+            _showTageContainerWork(),
+            const SizedBox(width: 10),
+            _showTageContainerPraiorty()
+          ]),
+          const Spacer(),
+          CircleAvatar(
+              backgroundImage: widget.todo.todoimage == null
+                  ? null
+                  : FileImage(widget.todo.todoimage!),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              radius: 35),
+          const Spacer(),
+          _showDeletButton(),
         ],
       ),
     );
@@ -91,9 +90,27 @@ class _TodoTileWidgetState extends State<TodoTileWidget> {
             Image.asset(
               'assets/workicon.png',
             ),
-            // const SizedBox(
-            //   width: 1,
-            // ),
+            Text('Work', style: Theme.of(context).textTheme.bodySmall)
+          ],
+        ),
+      ),
+    );
+  }
+
+  Padding personalWorkTage() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 04, right: 4),
+      child: Container(
+        height: 20,
+        width: 60,
+        decoration: BoxDecoration(
+            color: const Color(0xffFFCC80),
+            borderRadius: BorderRadius.circular(2)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(Icons.work),
             Text('Work', style: Theme.of(context).textTheme.bodySmall)
           ],
         ),
@@ -160,7 +177,7 @@ class _TodoTileWidgetState extends State<TodoTileWidget> {
               'assets/flagicon.png',
             ),
             Text(
-              '3',
+              "${widget.todo.priority}",
               style: Theme.of(context).textTheme.bodySmall,
             )
           ],

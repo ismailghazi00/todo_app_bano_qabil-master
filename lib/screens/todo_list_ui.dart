@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/widgets/todo_tile_widget.dart';
-import 'package:todo_app/screens/todo_empty_ui.dart';
+import 'package:todo_app/screens/empty_ui.dart';
 import 'package:todo_app/models/controller.dart';
 import 'package:todo_app/models/todo_class.dart';
-import 'package:todo_app/widgets/bottom_sheet_widget.dart';
-
 import '../widgets/add_todo_form_widget.dart';
 import '../widgets/drawer.dart';
 import '../widgets/serch_text_field.dart';
@@ -32,6 +30,8 @@ class _TodoListScreenState extends State<TodoListScreen> {
     super.initState();
   }
 
+  void setTheState() => setState(() {});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,7 +51,8 @@ class _TodoListScreenState extends State<TodoListScreen> {
               //we have returened the prebult _ShowTodoAddForm
               context: context,
               builder: (context) {
-                return AddTodoForm(controller: controller);
+                return AddTodoForm(
+                    controller: controller, setTheState: setTheState);
               },
               isScrollControlled: true, //to make BottomSheeet Scrollable
             ).then((value) => setState(() {}));
@@ -71,8 +72,12 @@ class _TodoListScreenState extends State<TodoListScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
               child: Column(
                 children: [
-                  SerchTextField(controller: controller ),
-                  //as this need controller.SerchedList so we have to give it contrller in peramater
+                  SerchTextField(
+                    /////////-----------------------------------------------------
+                    controller: controller,
+                    setTheState: setTheState,
+                  ),
+                  //as this widget or class need controller.SerchedList and the setTheState funcation so we have to give it in peramater
                   const SizedBox(
                     height: 20,
                   ),
