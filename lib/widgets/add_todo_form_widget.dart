@@ -1,18 +1,22 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:todo_app/screens/todo_main.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:todo_app/models/controller.dart';
 
 class AddTodoForm extends StatefulWidget {
-  const AddTodoForm({super.key, this.controller});
+  const AddTodoForm({super.key, this.controller, required this.setTheState});
   final TodoController? controller;
+  final Function setTheState;
   @override
   State<AddTodoForm> createState() => _AddTodoFormState();
 }
 
 class _AddTodoFormState extends State<AddTodoForm> {
   String? userTitle, userDescription;
+  File? usertodoimage;
   DateTime? userTodoTime;
-  int userPriority = 0;
+  int userPriority = 1;
+  String? userTag;
 
 //the veriables where the user data will temprory stored
   void userPrortyIncFuncation() {
@@ -130,7 +134,7 @@ class _AddTodoFormState extends State<AddTodoForm> {
               ),
               IconButton(
                   onPressed: () {
-                    // userPrortyIncFuncation();
+                    userPrortyIncFuncation();
                   },
                   icon: Image.asset("assets/tag.png")),
               Text('$userPriority',
@@ -139,7 +143,162 @@ class _AddTodoFormState extends State<AddTodoForm> {
                 width: 15,
               ),
               IconButton(
-                  onPressed: () {}, icon: Image.asset("assets/flag.png")),
+                  onPressed: () {
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return Container(
+                              height: 260,
+                              //Bottom Sheet will adopt the size of continer that we returned, also the shape and color
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30)),
+                              child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Column(children: [
+                                    ListTile(
+                                      onTap: () {
+                                        userTag = "Work";
+                                      },
+                                      tileColor:
+                                          const Color.fromARGB(255, 75, 75, 75),
+                                      title: Text('Work Tasky',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium),
+                                      leading: const Icon(Icons.business,
+                                          color: Colors.white),
+                                      trailing: const Icon(Icons.arrow_right),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    ListTile(
+                                      onTap: () {
+                                        userTag = "Home";
+                                      },
+                                      tileColor:
+                                          const Color.fromARGB(255, 75, 75, 75),
+                                      title: Text('Home Task',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium),
+                                      leading: const Icon(Icons.home,
+                                          color: Colors.white),
+                                      trailing: const Icon(Icons.arrow_right),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    ListTile(
+                                      onTap: () {
+                                        userTag = "Health";
+                                      },
+                                      tileColor:
+                                          const Color.fromARGB(255, 75, 75, 75),
+                                      title: Text('Health Task',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium),
+                                      leading: const Icon(
+                                          Icons.health_and_safety,
+                                          color: Colors.white),
+                                      trailing: const Icon(Icons.arrow_right),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    ListTile(
+                                      onTap: () {
+                                        userTag = "Shoping";
+                                      },
+                                      tileColor:
+                                          const Color.fromARGB(255, 75, 75, 75),
+                                      title: Text('Shoping Task',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium),
+                                      leading: const Icon(Icons.shopping_cart,
+                                          color: Colors.white),
+                                      trailing: const Icon(Icons.arrow_right),
+                                    ),
+                                    const SizedBox(height: 10),
+                                  ])));
+                        });
+                  },
+                  icon: Image.asset("assets/flag.png")),
+              IconButton(
+                  onPressed: () {
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return Container(
+                              height: 135,
+                              //Bottom Sheet will adopt the size of continer that we returned, also the shape and color
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30)),
+                              child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Column(children: [
+                                    ListTile(
+                                      onTap: () async {
+                                        //to use Image Picker Property we first put the code to get permission of gallery or camerby usnig link
+                                        //put "image_picker: ^1.0.0" in pubspec and impor "import 'package:image_picker/image_picker.dart';" at the top
+                                        final ImagePicker picker =
+                                            ImagePicker();
+                                        //we furst instance/ Intilize the Time picker class liske we do with controller class than we use the pickImage funcation whish we need here
+                                        XFile? image = await picker.pickImage(
+                                            source: ImageSource.gallery);
+                                        //like a tme picker we hold/save the value we got from imagepicker (the funcation returen a value in XFile) in a veiable image of a Type XFile
+                                        if (image != null) {
+                                          setState(() {
+                                            usertodoimage = File(image.path);
+                                            //To use File we must imort "import 'dart:io';",File is data type wich can holed the path and perform relative funcations
+                                            //in that case we have created File Tipe variable in althe way our class and Controller model, in witch the image fle will be stored
+                                          });
+                                          Navigator.pop(context);
+                                        }
+                                      },
+                                      tileColor:
+                                          const Color.fromARGB(255, 75, 75, 75),
+                                      title: Text('Pick  Image from Gallery',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium),
+                                      trailing: const Icon(
+                                        Icons.photo_library,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    ListTile(
+                                      onTap: () async {
+                                        //to use Image Picker Property we first put the code to get permission of gallery or camerby usnig link
+                                        //put "image_picker: ^1.0.0" in pubspec and impor "import 'package:image_picker/image_picker.dart';" at the top
+                                        final ImagePicker picker =
+                                            ImagePicker();
+                                        //we furst instance/ Intilize the Time picker class liske we do with controller class than we use the pickImage funcation whish we need here
+                                        XFile? image = await picker.pickImage(
+                                            source: ImageSource.camera);
+                                        //like a tme picker we hold/save the value we got from imagepicker (the funcation returen a value in XFile) in a veiable image of a Type XFile
+                                        if (image != null) {
+                                          setState(() {
+                                            usertodoimage = File(image.path);
+                                            //To use File we must imort "import 'dart:io';",File is data type wich can holed the path and perform relative funcations
+                                            //in that case we have created File Tipe variable in althe way our class and Controller model, in witch the image fle will be stored
+                                          });
+                                          Navigator.pop(context);
+                                        }
+                                      },
+                                      tileColor:
+                                          const Color.fromARGB(255, 75, 75, 75),
+                                      title: Text('OR take a photo with camera',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium),
+                                      trailing: const Icon(
+                                        Icons.camera,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  ])));
+                        });
+                  },
+                  icon: const Icon(Icons.add_a_photo_outlined,
+                      color: Colors.white)),
               const Spacer(),
               const SizedBox(
                 width: 15,
@@ -152,11 +311,18 @@ class _AddTodoFormState extends State<AddTodoForm> {
                         userTodoTime != null) {
                       setState(() async {
                         //we call setState here becaue TodoClass cannot SetStae, thatsway we call setState here
-                        widget.controller?.addTodo(userTitle!, userDescription!,
-                            userTodoTime!, userPriority, context);
+                        widget.controller?.addTodo(
+                            userTitle!,
+                            userDescription!,
+                            usertodoimage,
+                            userTodoTime!,
+                            userPriority,
+                            userTag!,
+                            context);
                         //the Funcation in TodoController Class needs these data to set Data in list specialy Context
                         await widget.controller?.setData();
                       });
+                      widget.setTheState();
                     }
                   },
                   icon: Image.asset("assets/send.png")),

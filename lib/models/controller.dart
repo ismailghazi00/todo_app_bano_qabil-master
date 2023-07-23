@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app/models/todo_class.dart';
@@ -12,14 +12,23 @@ class TodoController {
   //we Store Over Logic/ Funcations here its is Good Approcah
   //As these funcation is not recognize able for the class TodoMain so we can creat the object of this class
 
-  void addTodo(String userTitle, String userDescription, DateTime userTodoTime,
-      int userPriority, context) {
+  void addTodo(
+    String userTitle,
+    String userDescription,
+    File? usertodoimage,
+    DateTime userTodoTime,
+    int userPriority,
+    String userTag,
+    context,
+  ) {
     // setState(() { as set state is belongs to Stetfull widget so we couldent call it here, we will call set sate where we call these funcations
     todoList.add(Todo(
         title: userTitle,
         description: userDescription,
+        todoimage: usertodoimage,
         todoTime: userTodoTime,
-        priority: userPriority));
+        priority: userPriority,
+        tag: userTag));
     //an add funcation can add data to to todolist
 //because this class dont recognized Context, thatway we add paremater in Context above
 //or we can call this line in where we call _addTodo Funcation
