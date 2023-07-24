@@ -56,17 +56,28 @@ class _TodoTileWidgetState extends State<TodoTileWidget> {
               ]),
           Row(mainAxisAlignment: MainAxisAlignment.start, children: [
             const SizedBox(width: 30),
-            _showTageContainerWork(),
+            widget.todo.tag == "work" ? workTage() : Container(),
+            widget.todo.tag == "personal" ? personalTage() : Container(),
+            widget.todo.tag == "health" ? helthTag() : Container(),
+            widget.todo.tag == "study" ? studyTag() : Container(),
+            // studyTag(),
             const SizedBox(width: 10),
             _showTageContainerPraiorty()
           ]),
           const Spacer(),
-          CircleAvatar(
-              backgroundImage: widget.todo.todoimage == null
-                  ? null
-                  : FileImage(widget.todo.todoimage!),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              radius: 35),
+          //if there is todo image in object it will show the image other wise wont show any thing/ show empty continer
+          widget.todo.todoimage != null
+              ? CircleAvatar(
+                  backgroundImage: FileImage(widget.todo.todoimage!),
+                  radius: 35)
+              : Container(),
+
+          // CircleAvatar(
+          //     backgroundImage: widget.todo.todoimage == null
+          //         ? null
+          //         : FileImage(widget.todo.todoimage!),
+          //     backgroundColor: Theme.of(context).colorScheme.primary,
+          //     radius: 35),
           const Spacer(),
           _showDeletButton(),
         ],
@@ -74,7 +85,7 @@ class _TodoTileWidgetState extends State<TodoTileWidget> {
     );
   }
 
-  Padding _showTageContainerWork() {
+  Padding workTage() {
     return Padding(
       padding: const EdgeInsets.only(left: 04, right: 4),
       child: Container(
@@ -87,31 +98,79 @@ class _TodoTileWidgetState extends State<TodoTileWidget> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset(
-              'assets/workicon.png',
+            const Icon(
+              Icons.work_outline,
+              color: Colors.black,
+              size: 20,
             ),
-            Text('Work', style: Theme.of(context).textTheme.bodySmall)
+            Text('Work',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: Colors.black))
           ],
         ),
       ),
     );
   }
 
-  Padding personalWorkTage() {
+  Padding personalTage() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 04, right: 4),
+      child: Container(
+        height: 20,
+        width: 70,
+        decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 0, 110, 42),
+            borderRadius: BorderRadius.circular(2)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Icon(Icons.person, size: 20),
+            Text('Personal', style: Theme.of(context).textTheme.bodySmall)
+          ],
+        ),
+      ),
+    );
+  }
+
+  Padding helthTag() {
     return Padding(
       padding: const EdgeInsets.only(left: 04, right: 4),
       child: Container(
         height: 20,
         width: 60,
         decoration: BoxDecoration(
-            color: const Color(0xffFFCC80),
+            color: const Color.fromARGB(255, 116, 0, 6),
             borderRadius: BorderRadius.circular(2)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(Icons.work),
-            Text('Work', style: Theme.of(context).textTheme.bodySmall)
+            const Icon(Icons.health_and_safety, size: 20),
+            Text('Health', style: Theme.of(context).textTheme.bodySmall)
+          ],
+        ),
+      ),
+    );
+  }
+
+  Padding studyTag() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 04, right: 4),
+      child: Container(
+        height: 20,
+        width: 60,
+        decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 7, 0, 100),
+            borderRadius: BorderRadius.circular(2)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Icon(Icons.school_outlined, size: 20),
+            Text('Study', style: Theme.of(context).textTheme.bodySmall)
           ],
         ),
       ),

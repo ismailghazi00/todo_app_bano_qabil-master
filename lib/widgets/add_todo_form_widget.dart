@@ -3,6 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:todo_app/models/controller.dart';
 
+enum TodoTagEnum {
+  work,
+  personal,
+  health,
+  study
+} //Example of using 'enum' for dropdown Items
+
 class AddTodoForm extends StatefulWidget {
   const AddTodoForm({super.key, this.controller, required this.setTheState});
   final TodoController? controller;
@@ -15,10 +22,17 @@ class _AddTodoFormState extends State<AddTodoForm> {
   String? userTitle, userDescription;
   File? usertodoimage;
   DateTime? userTodoTime;
-  int userPriority = 1;
+  int userPriority = 0;
   String? userTag;
+  //the veriables where the user data will temprory stored before we assigned these values to class
 
-//the veriables where the user data will temprory stored
+  List<String> TodoTagList = [
+    'work',
+    'personal',
+    'health',
+    'study'
+  ]; //Example of using 'List' for dropdown Items
+  TodoTagEnum? todoTagEnum; //initilizinf the enum that we have created above
   void userPrortyIncFuncation() {
     setState(() {
       userPriority++;
@@ -139,87 +153,38 @@ class _AddTodoFormState extends State<AddTodoForm> {
                   icon: Image.asset("assets/tag.png")),
               Text('$userPriority',
                   style: Theme.of(context).textTheme.bodySmall),
-              const SizedBox(
-                width: 15,
-              ),
-              IconButton(
-                  onPressed: () {
-                    showModalBottomSheet(
-                        context: context,
-                        builder: (context) {
-                          return Container(
-                              height: 260,
-                              //Bottom Sheet will adopt the size of continer that we returned, also the shape and color
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30)),
-                              child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Column(children: [
-                                    ListTile(
-                                      onTap: () {
-                                        userTag = "Work";
-                                      },
-                                      tileColor:
-                                          const Color.fromARGB(255, 75, 75, 75),
-                                      title: Text('Work Tasky',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium),
-                                      leading: const Icon(Icons.business,
-                                          color: Colors.white),
-                                      trailing: const Icon(Icons.arrow_right),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    ListTile(
-                                      onTap: () {
-                                        userTag = "Home";
-                                      },
-                                      tileColor:
-                                          const Color.fromARGB(255, 75, 75, 75),
-                                      title: Text('Home Task',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium),
-                                      leading: const Icon(Icons.home,
-                                          color: Colors.white),
-                                      trailing: const Icon(Icons.arrow_right),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    ListTile(
-                                      onTap: () {
-                                        userTag = "Health";
-                                      },
-                                      tileColor:
-                                          const Color.fromARGB(255, 75, 75, 75),
-                                      title: Text('Health Task',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium),
-                                      leading: const Icon(
-                                          Icons.health_and_safety,
-                                          color: Colors.white),
-                                      trailing: const Icon(Icons.arrow_right),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    ListTile(
-                                      onTap: () {
-                                        userTag = "Shoping";
-                                      },
-                                      tileColor:
-                                          const Color.fromARGB(255, 75, 75, 75),
-                                      title: Text('Shoping Task',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium),
-                                      leading: const Icon(Icons.shopping_cart,
-                                          color: Colors.white),
-                                      trailing: const Icon(Icons.arrow_right),
-                                    ),
-                                    const SizedBox(height: 10),
-                                  ])));
-                        });
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10, 0, 0, 10),
+                child: DropdownButton(
+                  //'item' is list of widget to display in drop down, could be taxt, container, icon oa any thing
+                  items:
+                      //items acept the listtype 'DropdownMenuItem'so we have to convet the enum to list with help of '.map'
+                      TodoTagEnum.values
+                          .map((e) => DropdownMenuItem(
+                                //'DropdownMenuItem' list required the child to show in drop down, this is actual child that will show in drop down
+                                child: Text(e.name),
+                                //'value' is what we want to return by cliking on the child above
+                                //in over case we returned e, which is elimnte or object that pas by .map funcation on by one
+                                value: e.name.toString(),
+                                //at the end we convert all this to list
+                                //we return hole object (like return 'e') so we colud use any value from the 'e'/object but in that case we are going to stror this data in String type varibale so we have specify the name from e and also convert it in String with .toString
+                              ))
+                          .toList(),
+                  //that value is a value to show as salected value  on top of dropdown
+                  //or we are taling the drop down that this value is salected value
+                  value: userTag,
+                  onChanged: (onchangeValue) {
+                    setState(() {
+                      userTag = onchangeValue;
+                    });
                   },
-                  icon: Image.asset("assets/flag.png")),
+                  hint: const Text('Select a Tag'),
+                  underline: Container(),
+                  borderRadius: BorderRadius.circular(5),
+                  //to remove a bed underline under the salacted tag
+                ),
+              ),
+              const SizedBox(width: 15),
               IconButton(
                   onPressed: () {
                     showModalBottomSheet(
@@ -317,7 +282,7 @@ class _AddTodoFormState extends State<AddTodoForm> {
                             usertodoimage,
                             userTodoTime!,
                             userPriority,
-                            userTag!,
+                            userTag,
                             context);
                         //the Funcation in TodoController Class needs these data to set Data in list specialy Context
                         await widget.controller?.setData();
@@ -360,4 +325,79 @@ class _AddTodoFormState extends State<AddTodoForm> {
           ?.copyWith(color: Colors.white.withOpacity(0.87)),
     );
   }
+
+  // showModalBottomSheet(
+  //   context: context,
+  //   builder: (context) {
+  //     return Container(
+  //         height: 260,
+  //         //Bottom Sheet will adopt the size of continer that we returned, also the shape and color
+  //         decoration: BoxDecoration(
+  //             borderRadius: BorderRadius.circular(30)),
+  //         child: Padding(
+  //             padding: const EdgeInsets.all(10.0),
+  //             child: Column(children: [
+  //               ListTile(
+  //                 onTap: () {
+  //                   userTag = "Work";
+  //                 },
+  //                 tileColor:
+  //                     const Color.fromARGB(255, 75, 75, 75),
+  //                 title: Text('Work Tasky',
+  //                     style: Theme.of(context)
+  //                         .textTheme
+  //                         .bodyMedium),
+  //                 leading: const Icon(Icons.business,
+  //                     color: Colors.white),
+  //                 trailing: const Icon(Icons.arrow_right),
+  //               ),
+  //               const SizedBox(height: 10),
+  //               ListTile(
+  //                 onTap: () {
+  //                   userTag = "Home";
+  //                 },
+  //                 tileColor:
+  //                     const Color.fromARGB(255, 75, 75, 75),
+  //                 title: Text('Home Task',
+  //                     style: Theme.of(context)
+  //                         .textTheme
+  //                         .bodyMedium),
+  //                 leading: const Icon(Icons.home,
+  //                     color: Colors.white),
+  //                 trailing: const Icon(Icons.arrow_right),
+  //               ),
+  //               const SizedBox(height: 10),
+  //               ListTile(
+  //                 onTap: () {
+  //                   userTag = "Health";
+  //                 },
+  //                 tileColor:
+  //                     const Color.fromARGB(255, 75, 75, 75),
+  //                 title: Text('Health Task',
+  //                     style: Theme.of(context)
+  //                         .textTheme
+  //                         .bodyMedium),
+  //                 leading: const Icon(
+  //                     Icons.health_and_safety,
+  //                     color: Colors.white),
+  //                 trailing: const Icon(Icons.arrow_right),
+  //               ),
+  //               const SizedBox(height: 10),
+  //               ListTile(
+  //                 onTap: () {
+  //                   userTag = "Shoping";
+  //                 },
+  //                 tileColor:
+  //                     const Color.fromARGB(255, 75, 75, 75),
+  //                 title: Text('Shoping Task',
+  //                     style: Theme.of(context)
+  //                         .textTheme
+  //                         .bodyMedium),
+  //                 leading: const Icon(Icons.shopping_cart,
+  //                     color: Colors.white),
+  //                 trailing: const Icon(Icons.arrow_right),
+  //               ),
+  //               const SizedBox(height: 10),
+  //             ])));
+  //   });
 }
